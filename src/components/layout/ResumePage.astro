@@ -1,0 +1,23 @@
+---
+import { education } from '@/content/education';
+import { experience } from '@/content/experience';
+import { profile } from '@/content/profile';
+import { projects } from '@/content/projects';
+import { skills } from '@/content/skills';
+import { socials } from '@/content/socials';
+import type { Locale } from '@/types/content';
+import { withBase } from '@/utils/paths';
+const { locale } = Astro.props as { locale: Locale };
+const home = locale === 'da' ? withBase('/') : withBase('/en/');
+---
+<main class="resume-page" id="main">
+  <div class="print-controls no-print"><a class="button" href={home}>{locale === 'da' ? 'Tilbage til portfolio' : 'Back to portfolio'}</a><button class="button" type="button" onclick="window.print()">{locale === 'da' ? 'Print / gem som PDF' : 'Print / save as PDF'}</button></div>
+  <article class="resume-sheet">
+    <header class="resume-header"><div><p class="eyebrow">{profile.role[locale]}</p><h1>{profile.name}</h1><p>{profile.shortIntro[locale]}</p></div><address style="font-style:normal"><a href={`mailto:${socials.email}`}>{socials.email}</a><br /><a href={`tel:${socials.phone.replaceAll(' ', '')}`}>{socials.phone}</a><br />{profile.location[locale]}<br /><a href={socials.linkedin}>LinkedIn</a> · <a href={socials.github}>GitHub</a></address></header>
+    <section class="resume-section"><h2>{locale === 'da' ? 'Profil' : 'Profile'}</h2><p>{profile.longIntro[locale]}</p></section>
+    <section class="resume-section"><h2>{locale === 'da' ? 'Erfaring' : 'Experience'}</h2>{experience.map((entry) => <article class="resume-entry"><time>{entry.period[locale]}</time><div><strong>{entry.title[locale]} · {entry.organisation}</strong><p>{entry.overview[locale]}</p><ul>{entry.details[locale].map((detail) => <li>{detail}</li>)}</ul></div></article>)}</section>
+    <section class="resume-section"><h2>{locale === 'da' ? 'Uddannelse' : 'Education'}</h2>{education.map((entry) => <article class="resume-entry"><time>{entry.period[locale]}</time><div><strong>{entry.title[locale]} · {entry.organisation}</strong><p>{entry.overview[locale]}</p></div></article>)}</section>
+    <section class="resume-section"><h2>{locale === 'da' ? 'Udvalgte projekter' : 'Selected projects'}</h2>{projects.slice(0,2).map((project) => <article class="resume-entry"><span>{project.status[locale]}</span><div><strong>{project.name}</strong><p>{project.description[locale]} {project.contribution[locale]}</p></div></article>)}</section>
+    <section class="resume-section"><h2>{locale === 'da' ? 'Kompetencer' : 'Skills'}</h2><p>{skills.map((group) => `${group.title[locale]}: ${group.skills.join(', ')}`).join(' · ')}</p></section>
+  </article>
+</main>

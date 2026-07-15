@@ -1,0 +1,68 @@
+---
+import Navigation from '@/components/navigation/Navigation.astro';
+import Loader from '@/components/motion/Loader.astro';
+import { profile } from '@/content/profile';
+import { site } from '@/content/site';
+import { socials } from '@/content/socials';
+import type { Locale } from '@/types/content';
+import { withBase } from '@/utils/paths';
+import '@/styles/global.css';
+
+interface Props {
+  locale: Locale;
+  title?: string;
+  description?: string;
+  hideNavigation?: boolean;
+}
+
+const { locale, title = site.title[locale], description = site.description[locale], hideNavigation = false } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const canonical = new URL(Astro.url.pathname, Astro.site || Astro.url.origin);
+const altDa = new URL(withBase('/'), Astro.site || Astro.url.origin);
+const altEn = new URL(withBase('/en/'), Astro.site || Astro.url.origin);
+const jsonLd = {
+  '@context': 'https://schema.org', '@type': 'Person',
+  name: profile.name,
+  jobTitle: profile.role[locale],
+  url: canonical.origin,
+  email: `mailto:${socials.email}`,
+  telephone: socials.phone,
+  address: { '@type': 'PostalAddress', addressLocality: locale === 'da' ? 'København' : 'Copenhagen', addressCountry: 'DK' },
+  sameAs: [socials.linkedin, socials.github]
+};
+---
+<!doctype html>
+<html lang={locale} data-base={base}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0d463d" />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="da" href={altDa} />
+    <link rel="alternate" hreflang="en" href={altEn} />
+    <link rel="alternate" hreflang="x-default" href={altDa} />
+    <link rel="icon" type="image/svg+xml" href={withBase('/icons/favicon.svg')} />
+    <link rel="apple-touch-icon" href={withBase('/icons/apple-touch-icon.png')} />
+    <link rel="manifest" href={withBase('/manifest.webmanifest')} />
+    <meta property="og:type" content="profile" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(withBase('/og/portfolio-preview.png'), Astro.site || Astro.url.origin)} />
+    <meta property="og:locale" content={locale === 'da' ? 'da_DK' : 'en_GB'} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <title>{title}</title>
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{locale === 'da' ? 'Gå til indhold' : 'Skip to content'}</a>
+    {!hideNavigation && <Loader locale={locale} />}
+    {!hideNavigation && <Navigation locale={locale} />}
+    <slot />
+    {!hideNavigation && <div class="custom-cursor" aria-hidden="true" data-cursor></div>}
+    {!hideNavigation && <script>import '@/scripts/site';</script>}
+  </body>
+</html>

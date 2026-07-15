@@ -1,0 +1,78 @@
+---
+import { site } from '@/content/site';
+import type { Locale } from '@/types/content';
+import { withBase } from '@/utils/paths';
+
+const { locale } = Astro.props as { locale: Locale };
+const labels = site.nav;
+const home = locale === 'da' ? withBase('/') : withBase('/en/');
+const otherLocale = locale === 'da' ? withBase('/en/') : withBase('/');
+const navItems = [
+  ['profile', labels.profile[locale]], ['orbit', labels.path[locale]], ['experience', labels.work[locale]], ['projects', labels.projects[locale]], ['contact', labels.contact[locale]]
+];
+---
+<header class="site-header is-dark" data-header>
+  <a class="monogram" href={home} aria-label={`${site.name} — home`}>{site.monogram}</a>
+  <nav class="desktop-nav" aria-label={locale === 'da' ? 'Primær navigation' : 'Primary navigation'}>
+    {navItems.map(([id, label]) => <a class="nav-link" href={`#${id}`}>{label}</a>)}
+  </nav>
+  <a class="lang-link" href={otherLocale} hreflang={locale === 'da' ? 'en' : 'da'}>{locale === 'da' ? 'EN' : 'DA'} <span aria-hidden="true">↗</span></a>
+  <button class="menu-toggle" type="button" aria-label={locale === 'da' ? 'Åbn menu' : 'Open menu'} aria-expanded="false" data-menu-open>
+    <span class="menu-icon" aria-hidden="true"><i></i><i></i><i></i></span>
+  </button>
+  <span class="section-progress" data-progress></span>
+</header>
+
+<dialog class="menu-dialog" data-menu aria-label={locale === 'da' ? 'Fuldskærmsmenu' : 'Fullscreen menu'}>
+  <button class="menu-dialog-close" type="button" data-menu-close aria-label={locale === 'da' ? 'Luk menu' : 'Close menu'}>×</button>
+  <div class="menu-inner">
+    <nav aria-label={locale === 'da' ? 'Menunavigation' : 'Menu navigation'}>
+      <ol class="menu-links">
+        {navItems.map(([id, label], index) => (
+          <li><a href={`#${id}`} data-menu-link><small>0{index + 1}</small>{label}</a></li>
+        ))}
+      </ol>
+    </nav>
+    <aside class="menu-preview" aria-hidden="true">
+      <div class="menu-preview-copy"><span class="eyebrow">Gabriel Back</span><strong>{locale === 'da' ? 'Systemer med en virkelig opgave.' : 'Systems with a real job to do.'}</strong></div>
+    </aside>
+  </div>
+</dialog>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const dialog = document.querySelector<HTMLDialogElement>('[data-menu]');
+  const openButton = document.querySelector<HTMLButtonElement>('[data-menu-open]');
+  const links = dialog?.querySelectorAll<HTMLAnchorElement>('[data-menu-link]');
+  const closeButton = dialog?.querySelector<HTMLButtonElement>('[data-menu-close]');
+  const setOpen = (open: boolean) => {
+    if (!dialog || !openButton) return;
+    if (open && !dialog.open) dialog.showModal();
+    if (!open && dialog.open) dialog.close();
+    openButton.setAttribute('aria-expanded', String(open));
+    openButton.setAttribute('aria-label', open ? (document.documentElement.lang === 'da' ? 'Luk menu' : 'Close menu') : (document.documentElement.lang === 'da' ? 'Åbn menu' : 'Open menu'));
+    document.body.classList.toggle('menu-open', open);
+  };
+  openButton?.addEventListener('click', () => setOpen(!dialog?.open));
+  closeButton?.addEventListener('click', () => setOpen(false));
+  links?.forEach((link) => link.addEventListener('click', () => setOpen(false)));
+  dialog?.addEventListener('click', (event) => { if (event.target === dialog) setOpen(false); });
+  dialog?.addEventListener('close', () => setOpen(false));
+
+  const darkSections = document.querySelectorAll<HTMLElement>('[data-nav-theme="dark"]');
+  const observer = new IntersectionObserver((entries) => {
+    const active = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+    if (active && header) header.classList.toggle('is-dark', active.target.getAttribute('data-nav-theme') === 'dark');
+  }, { rootMargin: '-5% 0px -90% 0px', threshold: [0, .1, .5] });
+  darkSections.forEach((section) => observer.observe(section));
+  document.querySelectorAll<HTMLElement>('[data-nav-theme="light"]').forEach((section) => observer.observe(section));
+
+  const progress = document.querySelector<HTMLElement>('[data-progress]');
+  const updateProgress = () => {
+    if (!progress) return;
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    progress.style.transform = `scaleX(${max > 0 ? window.scrollY / max : 0})`;
+  };
+  updateProgress();
+  window.addEventListener('scroll', updateProgress, { passive: true });
+</script>

@@ -1,0 +1,29 @@
+---
+import MediaFrame from '@/components/common/MediaFrame.astro';
+import { profile, profileMedia } from '@/content/profile';
+import type { Locale } from '@/types/content';
+const { locale } = Astro.props as { locale: Locale };
+---
+<section class="hero" id="top" data-nav-theme="dark">
+  <div class="hero-grid">
+    <div class="hero-main">
+      <div class="hero-art" aria-hidden="true">
+        <div class="hero-photo"><MediaFrame media={profileMedia[0]} locale={locale} eager /></div>
+      </div>
+      <div class="hero-copy reveal">
+        <h1 class="display" data-title-reveal>{profile.headline[locale]}</h1>
+        <div class="hero-intro">
+          <p class="lead">{profile.shortIntro[locale]}</p>
+        </div>
+      </div>
+      <span class="scroll-cue" aria-hidden="true">Scroll <i></i></span>
+    </div>
+    <aside class="hero-aside" aria-label={locale === 'da' ? 'Udvalgte resultater' : 'Selected results'}>
+      <div class="hero-proof reveal" aria-label={locale === 'da' ? 'Udvalgte resultater' : 'Selected results'}>
+        <div><span>{locale === 'da' ? 'Første uge' : 'First week'}</span><strong>600+</strong><small>{locale === 'da' ? 'brugere' : 'users'}</small></div>
+        <div><span>App Store</span><strong>#8</strong><small>{locale === 'da' ? 'i Danmark' : 'in Denmark'}</small></div>
+        <div><span>Full-stack</span><strong>{locale === 'da' ? 'Idé → drift' : 'Idea → live'}</strong><small>{locale === 'da' ? 'end-to-end' : 'end-to-end'}</small></div>
+      </div>
+    </aside>
+  </div>
+</section>

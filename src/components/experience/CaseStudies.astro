@@ -1,0 +1,40 @@
+---
+import MediaFrame from '@/components/common/MediaFrame.astro';
+import { caseStudies } from '@/content/experience';
+import type { Locale } from '@/types/content';
+const { locale } = Astro.props as { locale: Locale };
+const labels = locale === 'da'
+  ? { challenge: 'Udfordring', responsibility: 'Mit ansvar', work: 'Bygget / forbedret', result: 'Resultat' }
+  : { challenge: 'Challenge', responsibility: 'My responsibility', work: 'Built / improved', result: 'Result' };
+---
+<section class="section section--deep" id="work" data-nav-theme="dark">
+  <div class="shell">
+    <p class="eyebrow">{locale === 'da' ? 'Udvalgt arbejde' : 'Selected work'}</p>
+    <h2 class="section-title reveal">{locale === 'da' ? 'Det, jeg har bygget og forbedret.' : 'What I have built and improved.'}</h2>
+    <div class="case-grid">
+      {caseStudies.map((item) => (
+        <article class:list={['case reveal', { 'case--no-media': item.images.length === 0 }]}> 
+          {item.images.length > 0 && <div class:list={['case-visual', { 'case-visual--pair': item.images.length > 1 }]}> 
+            <div class="case-media-grid">
+              {item.images.map((image) => (
+                <figure class="case-media">
+                  <MediaFrame media={image} locale={locale} />
+                </figure>
+              ))}
+            </div>
+          </div>}
+          <div class="case-copy">
+            <p class="eyebrow">{item.organisation}</p><h3>{item.title[locale]}</h3>
+            <dl class="case-facts">
+              <div><dt>{labels.challenge}</dt><dd>{item.challenge[locale]}</dd></div>
+              <div><dt>{labels.responsibility}</dt><dd>{item.responsibility[locale]}</dd></div>
+              <div><dt>{labels.work}</dt><dd>{item.work[locale]}</dd></div>
+              <div><dt>{labels.result}</dt><dd>{item.result[locale]}</dd></div>
+            </dl>
+            <ul class="tag-list" style="margin-top:2rem">{item.technologies.map((tech) => <li class="tag">{tech}</li>)}</ul>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,23 @@
+---
+import { skills } from '@/content/skills';
+import type { Locale } from '@/types/content';
+const { locale } = Astro.props as { locale: Locale };
+---
+<section class="section" id="skills" data-nav-theme="light">
+  <div class="shell">
+    <div class="skills-intro">
+      <h2 class="section-title reveal">{locale === 'da' ? 'Fra idé til produkt — med de rigtige værktøjer.' : 'From idea to product — with the right tools.'}</h2>
+      <p class="skills-summary">{locale === 'da' ? 'Jeg kan dække hele forløbet: forstå behovet, designe systemet, bygge produktet og få det sikkert i drift.' : 'I can cover the full journey: understand the need, design the system, build the product and operate it reliably.'}</p>
+    </div>
+    <div class="skills-scroll" data-skills-scroll>
+      <div class="skills-layout">
+        <div class="skills-tabs" role="tablist" aria-label={locale === 'da' ? 'Kompetenceområder' : 'Skill areas'}>
+          {skills.map((group, index) => <button class="skill-tab" type="button" role="tab" id={`tab-${group.id}`} aria-controls={`panel-${group.id}`} aria-selected={index === 0 ? 'true' : 'false'} data-skill-tab={index}><span>0{index + 1}</span><span>{group.title[locale]}</span><span aria-hidden="true">↗</span></button>)}
+        </div>
+        <div class="skills-stage">
+          {skills.map((group, index) => <section class="skill-panel" role="tabpanel" id={`panel-${group.id}`} aria-labelledby={`tab-${group.id}`} hidden={index !== 0} data-skill-panel={index}><p class="eyebrow">0{index + 1} / 0{skills.length}</p><h3>{group.title[locale]}</h3><p class="lead">{group.description[locale]}</p><div class="skill-cloud">{group.skills.map((skill) => <span>{skill}</span>)}</div></section>)}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

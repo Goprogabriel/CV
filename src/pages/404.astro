@@ -1,0 +1,8 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Footer from '@/components/layout/Footer.astro';
+import { withBase } from '@/utils/paths';
+---
+<BaseLayout locale="da" title="404 — Siden findes ikke">
+  <main id="main"><section class="hero" data-nav-theme="dark"><div class="shell" style="display:grid;align-content:center;min-height:100svh"><p class="eyebrow">404 / Spor ikke fundet</p><h1 class="display">Denne vej ender her.</h1><p class="lead">Siden findes ikke, men resten af historien gør.</p><p><a class="button" href={withBase('/')}>Tilbage til forsiden</a></p></div></section></main><Footer locale="da" />
+</BaseLayout>

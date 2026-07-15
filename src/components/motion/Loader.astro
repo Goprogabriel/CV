@@ -1,0 +1,29 @@
+---
+import { site } from '@/content/site';
+import type { Locale } from '@/types/content';
+const { locale } = Astro.props as { locale: Locale };
+---
+<div class="loader" data-loader aria-hidden="true">
+  <span class="loader-word" data-loader-word>{site.loaderWords[locale][0]}</span>
+</div>
+<script>
+  const loader = document.querySelector<HTMLElement>('[data-loader]');
+  const word = document.querySelector<HTMLElement>('[data-loader-word]');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (loader && word) {
+    if (reduced || sessionStorage.getItem('gb-loader-seen')) {
+      loader.remove();
+    } else {
+      const locale = document.documentElement.lang === 'da' ? 'da' : 'en';
+      const words = locale === 'da' ? ['Teknologi', 'Drift', 'Produkter', 'Systemer', 'Mennesker'] : ['Technology', 'Operations', 'Products', 'Systems', 'People'];
+      let i = 0;
+      const timer = window.setInterval(() => { i += 1; word.textContent = words[i] || words.at(-1) || ''; }, 150);
+      window.setTimeout(() => {
+        window.clearInterval(timer);
+        loader.classList.add('is-done');
+        sessionStorage.setItem('gb-loader-seen', '1');
+        window.setTimeout(() => loader.remove(), 450);
+      }, 760);
+    }
+  }
+</script>

@@ -1,0 +1,19 @@
+---
+import MediaPlaceholder from '@/components/common/MediaPlaceholder.astro';
+import type { Locale, MediaAsset } from '@/types/content';
+import { withBase } from '@/utils/paths';
+interface Props { media: MediaAsset; locale: Locale; eager?: boolean; }
+const { media, locale, eager = false } = Astro.props;
+---
+<div class:list={['media-frame', { 'media-frame--contain': media.fit === 'contain' }]}>
+  {media.placeholder
+    ? <MediaPlaceholder label={media.alt[locale]} />
+    : <img
+        src={withBase(media.src)}
+        alt={media.alt[locale]}
+        loading={eager ? 'eager' : 'lazy'}
+        decoding="async"
+        fetchpriority={eager ? 'high' : 'auto'}
+        style={`object-fit:${media.fit ?? 'cover'};object-position:${media.position ?? 'center'}`}
+      />}
+</div>

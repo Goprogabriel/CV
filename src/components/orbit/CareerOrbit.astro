@@ -1,0 +1,69 @@
+---
+import { education, earlierMilestones } from '@/content/education';
+import { experience } from '@/content/experience';
+import { projectTimelineEntries } from '@/content/projects';
+import type { Locale, TimelineEntry } from '@/types/content';
+const { locale } = Astro.props as { locale: Locale };
+const entries: TimelineEntry[] = [...earlierMilestones, ...experience.slice().reverse(), ...projectTimelineEntries, ...education].sort((a, b) => a.startYear - b.startYear);
+const kindLabels = {
+  experience: { da: 'Erfaring', en: 'Experience' }, education: { da: 'Uddannelse', en: 'Education' }, project: { da: 'Privat projekt', en: 'Private project' }, volunteer: { da: 'Frivilligt', en: 'Volunteer' }, milestone: { da: 'Milepæl', en: 'Milestone' }
+};
+const orbitLabels: Record<string, { da: string; en: string }> = {
+  htx: { da: 'HTX · IT', en: 'HTX · IT' },
+  'earlier-work': { da: 'Service & IT', en: 'Service & IT' },
+  'we-are-safe': { da: 'We are Safe', en: 'We are Safe' },
+  roskilde: { da: 'Roskilde', en: 'Roskilde' },
+  partypal: { da: 'PartyPal', en: 'PartyPal' },
+  busbus: { da: 'BUSBUS', en: 'BUSBUS' },
+  estatetool: { da: 'Estatetool', en: 'Estatetool' },
+  nomad: { da: 'Head of IT', en: 'Head of IT' }
+};
+---
+<section class="section section--dark" id="orbit" data-nav-theme="dark">
+  <div class="shell">
+    <div class="orbit-header reveal">
+      <div><p class="eyebrow">{locale === 'da' ? 'Karriereforløb' : 'Career path'}</p><h2 class="section-title" data-title-reveal>{locale === 'da' ? 'Fra support til Head of IT.' : 'From support to Head of IT.'}</h2></div>
+      <p class="lead">{locale === 'da' ? 'Tæt på brugerne først. Mere ansvar for produkt, kode og drift siden.' : 'Close to users first. Then increasing ownership of product, code and operations.'}</p>
+    </div>
+    <div class="orbit-scroll" data-orbit-scroll>
+      <div class="orbit-pin" data-orbit-pin>
+        <div class="orbit-stage reveal" data-orbit-stage>
+          <div class="orbit-visual-column">
+            <div class="orbit-visual">
+              <svg class="orbit-progress" viewBox="0 0 600 600" aria-hidden="true">
+                <circle class="orbit-progress-track" cx="300" cy="300" r="270" pathLength="100" />
+                <circle class="orbit-progress-value" cx="300" cy="300" r="270" pathLength="100" data-orbit-progress />
+                <circle class="orbit-progress-inner" cx="300" cy="300" r="174" />
+              </svg>
+              <div class="orbit-ring" data-orbit-ring role="group" aria-label={locale === 'da' ? 'Karriereforløb. Brug venstre og højre piletast.' : 'Career path. Use left and right arrow keys.'}>
+                {entries.map((entry, index) => (
+                  <button class="orbit-node" style={`--angle:${(360 / entries.length) * index}deg`} type="button" data-orbit-node data-index={index} aria-pressed={index === 0 ? 'true' : 'false'}>
+                    <span class="orbit-node-content"><small>{entry.startYear}</small>{(orbitLabels[entry.id] ?? entry.title)[locale]}</span>
+                  </button>
+                ))}
+              </div>
+              <div class="orbit-centre" aria-hidden="true"><strong data-orbit-count>01</strong><span>/ {String(entries.length).padStart(2, '0')}</span></div>
+            </div>
+            <p class="orbit-instruction">{locale === 'da' ? 'Scroll for at følge forløbet · træk hjulet for at udforske' : 'Scroll to follow the path · drag the wheel to explore'}</p>
+          </div>
+          <div class="orbit-details">
+            {entries.map((entry, index) => (
+              <article class="orbit-detail" data-orbit-detail={index} hidden={index !== 0} aria-live="polite">
+                <p class="eyebrow">{kindLabels[entry.kind][locale]} · {entry.period[locale]}</p>
+                <h3>{entry.title[locale]}</h3><strong>{entry.organisation}</strong>
+                <p>{entry.overview[locale]}</p>
+                <ul>{entry.details[locale].map((detail) => <li>{detail}</li>)}</ul>
+                <ul class="tag-list">{entry.technologies.map((tech) => <li class="tag">{tech}</li>)}</ul>
+              </article>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="orbit-mobile" aria-label={locale === 'da' ? 'Karriereforløb i listeform' : 'Career path as a list'}>
+      {entries.slice().reverse().map((entry) => (
+        <details><summary>{entry.startYear} — {entry.title[locale]}</summary><p><strong>{entry.organisation}</strong> · {entry.period[locale]}</p><p>{entry.overview[locale]}</p></details>
+      ))}
+    </div>
+  </div>
+</section>

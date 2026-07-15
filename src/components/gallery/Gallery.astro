@@ -1,0 +1,19 @@
+---
+import MediaFrame from '@/components/common/MediaFrame.astro';
+import MediaPlaceholder from '@/components/common/MediaPlaceholder.astro';
+import { gallery } from '@/content/gallery';
+import type { Locale } from '@/types/content';
+const { locale } = Astro.props as { locale: Locale };
+---
+<section class="section" id="gallery" data-nav-theme="light">
+  <div class="shell">
+    <div class="gallery-header reveal">
+      <div><p class="eyebrow">{locale === 'da' ? 'Billedarkiv' : 'Image archive'}</p><h2 class="section-title">{locale === 'da' ? 'Lidt af arbejdet. Og mennesket bag.' : 'Some of the work. And the person behind it.'}</h2></div>
+      <p class="lead">{locale === 'da' ? 'Produkter bliver skabt med nysgerrighed, ansvar og andre mennesker.' : 'Products are built with curiosity, ownership and other people.'}</p>
+    </div>
+    <div class="gallery-grid">
+      {gallery.map((item) => <button class="gallery-item reveal" type="button" data-gallery-item data-caption={item.caption?.[locale] || ''} aria-label={`${locale === 'da' ? 'Åbn billede' : 'Open image'}: ${item.alt[locale]}`}><figure style="margin:0;height:100%"><MediaFrame media={item} locale={locale} /><figcaption>{item.caption?.[locale]}</figcaption></figure></button>)}
+    </div>
+  </div>
+  <dialog class="lightbox" data-lightbox aria-label={locale === 'da' ? 'Billedfremviser' : 'Image viewer'}><button class="lightbox-close" type="button" data-lightbox-close aria-label={locale === 'da' ? 'Luk billede' : 'Close image'}>×</button><div class="lightbox-inner"><div data-lightbox-image><img data-lightbox-real hidden alt="" /><div data-lightbox-placeholder><MediaPlaceholder label="GB" /></div></div><p class="lightbox-caption" data-lightbox-caption></p></div></dialog>
+</section>

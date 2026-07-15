@@ -1,0 +1,7 @@
+---
+import { socials } from '@/content/socials';
+import type { Locale } from '@/types/content';
+const { locale } = Astro.props as { locale: Locale };
+---
+<footer class="footer"><span>Gabriel Back · {new Date().getFullYear()}</span><span><a href={socials.github}>GitHub</a> · <a href={socials.linkedin}>LinkedIn</a></span><span>{locale === 'da' ? 'Bygget og designet af Gabriel Back.' : 'Built and designed by Gabriel Back.'} <button class="back-top" type="button" data-back-top>{locale === 'da' ? 'Til toppen ↑' : 'Back to top ↑'}</button></span></footer>
+<script>document.querySelector('[data-back-top]')?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }));</script>

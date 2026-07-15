@@ -1,0 +1,30 @@
+---
+import { experience } from '@/content/experience';
+import type { Locale } from '@/types/content';
+import { withBase } from '@/utils/paths';
+const { locale } = Astro.props as { locale: Locale };
+---
+<section class="section" id="experience" data-nav-theme="light">
+  <div class="shell">
+    <div class="experience-intro reveal">
+      <div><p class="eyebrow">{locale === 'da' ? 'Erfaring' : 'Experience'}</p><h2 class="section-title">{locale === 'da' ? 'Roller, ansvar og resultater.' : 'Roles, ownership and outcomes.'}</h2></div>
+      <p class="lead">{locale === 'da' ? 'Åbn en rolle for ansvar, resultater og værktøjer.' : 'Open a role for responsibilities, outcomes and tools.'}</p>
+    </div>
+    <div class="experience-list">
+      {experience.map((entry) => (
+        <details class="experience-item reveal">
+          <summary>
+            <time>{entry.period[locale]}</time>
+            <span class="experience-summary-logo">{entry.logo ? <img src={withBase(entry.logo)} alt={`${entry.organisation} — logo`} loading="lazy" /> : entry.organisation.slice(0, 2)}</span>
+            <div><span class="company">{entry.organisation}</span><h3>{entry.title[locale]}</h3></div>
+            <span class="experience-plus" aria-hidden="true">+</span>
+          </summary>
+          <div class="experience-body">
+            <div><p>{entry.overview[locale]}</p><ul>{entry.details[locale].map((detail) => <li>{detail}</li>)}</ul></div>
+            <div><p class="eyebrow">{locale === 'da' ? 'Teknologier & værktøjer' : 'Technologies & tools'}</p><ul class="tag-list">{entry.technologies.map((tech) => <li class="tag">{tech}</li>)}</ul></div>
+          </div>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,26 @@
+---
+import Contact from '@/components/contact/Contact.astro';
+import Experience from '@/components/experience/Experience.astro';
+import CaseStudies from '@/components/experience/CaseStudies.astro';
+import Gallery from '@/components/gallery/Gallery.astro';
+import Hero from '@/components/hero/Hero.astro';
+import Footer from '@/components/layout/Footer.astro';
+import CareerOrbit from '@/components/orbit/CareerOrbit.astro';
+import Profile from '@/components/profile/Profile.astro';
+import Projects from '@/components/projects/Projects.astro';
+import Skills from '@/components/skills/Skills.astro';
+import type { Locale } from '@/types/content';
+const { locale } = Astro.props as { locale: Locale };
+---
+<main id="main">
+  <Hero locale={locale} />
+  <Profile locale={locale} />
+  <CareerOrbit locale={locale} />
+  <Experience locale={locale} />
+  <CaseStudies locale={locale} />
+  <Projects locale={locale} />
+  <Skills locale={locale} />
+  <Gallery locale={locale} />
+  <Contact locale={locale} />
+</main>
+<Footer locale={locale} />

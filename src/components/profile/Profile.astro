@@ -1,0 +1,25 @@
+---
+import MediaFrame from '@/components/common/MediaFrame.astro';
+import { profile, profileMedia } from '@/content/profile';
+import type { Locale } from '@/types/content';
+const { locale } = Astro.props as { locale: Locale };
+---
+<section class="section" id="profile" data-nav-theme="light">
+  <div class="shell profile-grid">
+    <figure class="profile-identity reveal">
+      <MediaFrame media={profileMedia[1]} locale={locale} />
+      <figcaption><span>GB / 02</span>{profileMedia[1].caption?.[locale]}</figcaption>
+    </figure>
+    <div class="profile-copy reveal">
+      <p class="eyebrow">{locale === 'da' ? 'Profil / sådan arbejder jeg' : 'Profile / how I work'}</p>
+      <h2 class="section-title" data-title-reveal>{locale === 'da' ? 'Én profil. Hele vejen fra behov til drift.' : 'One profile. From need to operations.'}</h2>
+      <p class="lead">{profile.longIntro[locale]}</p>
+      <p>{profile.approach[locale]}</p>
+      <dl class="profile-ledger">
+        <div><dt>{locale === 'da' ? 'Base' : 'Based in'}</dt><dd>{profile.location[locale]}</dd></div>
+        <div><dt>{locale === 'da' ? 'Fokus' : 'Focus'}</dt><dd>{profile.focus[locale]}</dd></div>
+        <div><dt>{locale === 'da' ? 'Dokumenteret' : 'Proof'}</dt><dd>{locale === 'da' ? '600+ brugere første uge · #8 i App Store' : '600+ users in week one · No. 8 in the App Store'}</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
