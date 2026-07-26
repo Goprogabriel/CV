@@ -26,6 +26,6 @@ export const site = {
     projects: { da: 'Projekter', en: 'Projects' },
     contact: { da: 'Kontakt', en: 'Contact' }
   },
-  liveUrl: 'https://goprogabriel.github.io/',
-  repositoryUrl: 'https://github.com/Goprogabriel'
+  liveUrl: 'https://goprogabriel.github.io/cv/',
+  repositoryUrl: 'https://github.com/Goprogabriel/cv'
 };

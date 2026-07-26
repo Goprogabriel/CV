@@ -1,143 +1,92 @@
 <div align="center">
 
-# Gabriel Back — Interactive CV & Portfolio
+# Gabriel Back — CV & Portfolio
 
-### An editorial profile about the systems I have built and the path that led me here.
+An interactive portfolio covering my background, work, technical skills and selected products.
 
-## [View live portfolio →](https://goprogabriel.github.io/)
+## [View the live site →](https://goprogabriel.github.io/cv/)
 
-[![Astro](https://img.shields.io/badge/Astro-5-BC52EE?logo=astro&logoColor=white)](https://astro.build/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![GitHub Pages](https://img.shields.io/badge/Deploy-GitHub%20Pages-222?logo=github)](https://pages.github.com/)
-[![Accessibility](https://img.shields.io/badge/Accessibility-keyboard%20%2B%20reduced%20motion-0D463D)](#accessibility-and-performance)
+[Projects](https://goprogabriel.github.io/cv/projects/) · [English CV](https://goprogabriel.github.io/cv/en/) · [Danish CV](https://goprogabriel.github.io/cv/)
 
-![Wide preview of Gabriel Back's portfolio](public/og/portfolio-preview.png)
+![Preview of Gabriel Back's portfolio](public/og/portfolio-preview.png)
 
 </div>
 
-This is not a template résumé. It is a bilingual, static editorial portfolio that gives recruiters a fast, readable path through my work while offering a more exploratory career orbit for visitors who want to interact.
+## What the site contains
+
+The main portfolio is a visual CV with:
+
+- a short profile and personal introduction;
+- an interactive career timeline;
+- work experience and two detailed professional cases;
+- shipped apps and operational tools;
+- technical skills, photographs and direct contact details;
+- Danish and English versions;
+- browser-friendly and downloadable print CVs.
+
+The separate English project directory presents eight pieces of work: Open Dictate, BUSBUS, PartyPal, Sidste Runde, the Nomad CRM, Nomad Properties, Flower and GetTestedNow. Every entry is a self-contained overview with a real product image, a short description, my contribution and the relevant technology.
 
 ## Design and interaction
 
-- A warm European editorial system with large serif typography, strict rules and forest-green fields.
-- A clear, no-JavaScript reading experience alongside a draggable circular career map.
-- A full-screen navigation layer, lightweight page progress, project drag rail and accessible image viewer.
-- Danish and English routes with centralized, typed content.
-- Dedicated A4 print views and direct downloads of manually maintained CV PDFs.
-- Deliberate motion powered by GSAP, ScrollTrigger and Draggable, with native scrolling and reduced-motion alternatives.
+The site uses an editorial visual system built around large serif type, dark green surfaces and compact technical details. Motion is used for section reveals, image parallax, scroll progress, the draggable career orbit, project rails and small interface responses.
 
-## Main interactions
+The layout has dedicated mobile behaviour rather than simply shrinking the desktop version. Dense sections collapse into readable lists, project cards become a single column, skill navigation becomes swipeable and touch targets remain usable. Reduced-motion preferences are respected throughout.
 
-The career orbit can be dragged with mouse or touch, reacts gently to scroll, snaps to milestones and supports arrow, Home and End keys. Mobile users receive a compact disclosure list instead. Projects can be explored in a touch-friendly scroll-snap rail, with the same information repeated below as a conventional accessible list.
+## Routes
 
-## Technology
+| Route | Purpose |
+| --- | --- |
+| `/cv/` | Danish portfolio |
+| `/cv/en/` | English portfolio |
+| `/cv/projects/` | English project directory |
+| `/cv/print/` | Danish print view |
+| `/cv/en/print/` | English print view |
 
-Astro · TypeScript · semantic HTML · CSS custom properties · GSAP · ScrollTrigger · Draggable · GitHub Actions · GitHub Pages
+## Built with
 
-No React runtime, backend, API or fake contact form is included. Heavy motion code is dynamically imported only when motion is allowed.
-
-## Screenshots
-
-The wide preview above is the repository banner. Add final captures after replacing portrait/project placeholders:
-
-- `public/media/social/portfolio-desktop.webp` — recommended 1920 × 1200.
-- `public/media/social/portfolio-mobile.webp` — recommended 828 × 1792.
-
-Then reference them here with normal Markdown image links.
-
-## Project structure
-
-```text
-src/
-  components/       focused Astro components by section
-  content/          bilingual, typed profile data
-  layouts/          document shell and SEO metadata
-  pages/            Danish, English, print and 404 routes
-  scripts/          progressively enhanced interactions
-  styles/           global editorial design system
-  types/            shared content models
-  utils/            GitHub Pages-safe path helpers
-public/
-  documents/cv/     manually exported CV PDFs
-  media/            replaceable portfolio imagery
-  og/               social preview artwork
-```
+Astro 5, TypeScript, semantic HTML, modern CSS and GSAP. The output is a static site with no client-side framework runtime, backend or contact form.
 
 ## Local development
 
-Requirements: Node.js 22+ and pnpm.
+Node.js 22 or newer and pnpm are required.
 
 ```bash
 pnpm install
 pnpm dev
 ```
 
-Open `http://localhost:4321`. Run the full quality gate before publishing:
+Open `http://localhost:4321`. Run the full check before publishing:
 
 ```bash
 pnpm verify
-pnpm preview
 ```
 
-## Editing content
-
-Personal content is not hardcoded inside visual components. Start here:
-
-- `src/content/profile.ts` — headline, biography, approach and personal facts.
-- `src/content/experience.ts` — roles and professional case studies.
-- `src/content/projects.ts` — private projects, links and screenshots.
-- `src/content/education.ts` — education and earlier milestones.
-- `src/content/skills.ts` — honest skill groupings.
-- `src/content/socials.ts` — email, phone, LinkedIn and GitHub.
-- `src/content/site.ts` — metadata, navigation and availability.
-
-Every localized value has `da` and `en` fields. Missing portrait, project and professional screenshots are clearly marked as placeholders. Replace them without touching visual components.
-
-To activate a replacement image, copy it to the path declared by the content entry and change that entry’s `placeholder` value from `true` to `false`. The shared media component then renders the real lazy-loaded image automatically.
-
-## Replacing images and CV files
-
-Read [`public/media/README.md`](public/media/README.md) for folder purposes, sizes, formats and naming rules. Avoid unlicensed stock imagery and only use company logos you have permission to publish.
-
-Replace the two PDFs in `public/documents/cv/` while preserving their filenames. The print-friendly HTML views remain available at `/print/` and `/en/print/`.
-
-## GitHub Pages deployment
-
-If this folder is not yet a Git repository, initialize it first with `git init -b main`, add the intended GitHub remote, commit and push. Otherwise, continue with the existing repository.
-
-1. Push to a repository whose default branch is `main`.
-2. In **Settings → Pages**, choose **GitHub Actions** as the source.
-3. Push to `main` or run **Deploy portfolio to GitHub Pages** manually.
-
-The workflow automatically detects:
-
-- `username.github.io` repositories and builds at `/`.
-- Project repositories and builds with `BASE_PATH=repository-name`.
-
-To test a project subpath locally:
+To build the same `/cv/` paths used by GitHub Pages:
 
 ```bash
-SITE_URL=https://goprogabriel.github.io BASE_PATH=my-portfolio pnpm build
+SITE_URL=https://goprogabriel.github.io BASE_PATH=cv pnpm build
 pnpm preview
 ```
 
-## Custom domain
+## Editing the portfolio
 
-Set the repository Actions variable `SITE_URL` to the full custom origin and optionally `BASE_PATH` if the site lives below a path. Add a `public/CNAME` file containing only the real domain when you own and configure it; no fake domain is enabled in this repository. Update the live link near the top of this README and `src/content/site.ts` at the same time.
+Most copy and project data lives in `src/content/`, separate from the Astro components:
 
-## Accessibility and performance
+- `profile.ts` — introduction and personal details;
+- `experience.ts` — roles and professional cases;
+- `projectShowcase.ts` — the eight entries on the project directory;
+- `projects.ts` — the shorter project selection on the CV;
+- `skills.ts`, `education.ts` and `socials.ts` — supporting CV content;
+- `site.ts` — site metadata and navigation labels.
 
-- Keyboard-operable menu, orbit, tabs, disclosures and lightbox.
-- Visible focus styles, landmarks, semantic headings and descriptive labels.
-- Mobile list alternatives for advanced interactions.
-- `prefers-reduced-motion` disables the loader and major movement.
-- Static HTML keeps the complete résumé readable when JavaScript is unavailable.
-- Lazy-image-ready media structure, stable placeholder ratios and no default video or 3D scene.
+Images and downloadable CV files live in `public/media/` and `public/documents/cv/`.
 
-Final photographs should be exported as responsive AVIF/WebP assets before launch. Run Lighthouse against the deployed URL after adding real imagery.
+## Deployment
 
-## License and contact
+The workflow in `.github/workflows/deploy.yml` checks and builds the site whenever `main` is updated, then publishes the static output to GitHub Pages.
 
-Code is available under the [MIT License](LICENSE). Personal copy, CV content and imagery remain Gabriel Back’s personal material.
+Repository: [github.com/Goprogabriel/cv](https://github.com/Goprogabriel/cv)
+
+## Contact
 
 [Email](mailto:gaphbahe@gmail.com) · [LinkedIn](https://www.linkedin.com/in/gabrielback/) · [GitHub](https://github.com/Goprogabriel)

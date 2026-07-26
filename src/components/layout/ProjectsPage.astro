@@ -1,0 +1,95 @@
+---
+import Footer from '@/components/layout/Footer.astro';
+import { showcaseProjects } from '@/content/projectShowcase';
+import { withBase } from '@/utils/paths';
+
+const cvPath = withBase('/en/');
+const repeatedNames = [...showcaseProjects, ...showcaseProjects];
+---
+
+<main id="main" class="projects-page">
+  <section class="projects-hero" data-nav-theme="dark">
+    <div class="projects-hero-grid" aria-hidden="true"></div>
+    <div class="shell projects-hero-inner">
+      <div class="projects-hero-copy">
+        <p class="eyebrow reveal">Selected work · 08 projects</p>
+        <h1 class="display reveal">Things I have built for real.</h1>
+      </div>
+
+      <div class="projects-hero-intro reveal">
+        <p class="lead">
+          A selection of products, internal tools, mobile apps and public websites. Some are
+          used every day, some were experiments, and all of them made it beyond the idea stage.
+        </p>
+        <a class="button magnetic" href={cvPath}>Back to the CV <span aria-hidden="true">↙</span></a>
+      </div>
+    </div>
+
+    <div class="projects-ticker" aria-hidden="true">
+      <div class="projects-ticker-track">
+        {repeatedNames.map((project) => (
+          <span>{project.name}<i></i></span>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="projects-directory" data-nav-theme="light">
+    <div class="shell">
+      <header class="projects-directory-head reveal">
+        <p class="rule-label">Project directory</p>
+        <p>
+          Each project is shown as a self-contained snapshot. There are no case-study pages or
+          hidden click-throughs here.
+        </p>
+      </header>
+
+      <div class="projects-showcase" data-project-showcase>
+        {showcaseProjects.map((project, index) => (
+          <article class="showcase-project" data-showcase-card>
+            <figure class:list={['showcase-project-media', { 'is-contained': project.imageFit === 'contain' }]}>
+              <img
+                src={withBase(project.image)}
+                alt={project.imageAlt}
+                loading={index < 2 ? 'eager' : 'lazy'}
+                decoding="async"
+                fetchpriority={index === 0 ? 'high' : 'auto'}
+                style={`object-fit:${project.imageFit ?? 'cover'};object-position:${project.imagePosition ?? 'center'}`}
+              />
+              <span class="showcase-project-number" aria-hidden="true">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <span class="showcase-project-status">{project.status}</span>
+            </figure>
+
+            <div class="showcase-project-copy">
+              <p class="eyebrow">{project.category}</p>
+              <h2>{project.name}</h2>
+              <p class="showcase-project-summary">{project.summary}</p>
+              <div class="showcase-project-contribution">
+                <span>My part</span>
+                <p>{project.contribution}</p>
+              </div>
+              <ul class="tag-list" aria-label={`${project.name} technologies`}>
+                {project.technologies.map((technology) => <li class="tag">{technology}</li>)}
+              </ul>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="projects-outro section--deep" data-nav-theme="dark">
+    <div class="shell projects-outro-inner reveal">
+      <p class="eyebrow">The common thread</p>
+      <h2 class="section-title">Useful software, carefully finished.</h2>
+      <p class="lead">
+        I like the whole route from a messy real-world need to a product people can actually use.
+      </p>
+      <a class="button magnetic" href={`${cvPath}#contact`}>Start a conversation <span aria-hidden="true">↗</span></a>
+    </div>
+  </section>
+</main>
+
+<Footer locale="en" />

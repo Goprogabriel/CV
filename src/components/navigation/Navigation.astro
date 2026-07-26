@@ -3,20 +3,52 @@ import { site } from '@/content/site';
 import type { Locale } from '@/types/content';
 import { withBase } from '@/utils/paths';
 
-const { locale } = Astro.props as { locale: Locale };
+interface Props {
+  locale: Locale;
+  page?: 'portfolio' | 'projects';
+}
+
+const { locale, page = 'portfolio' } = Astro.props;
 const labels = site.nav;
 const home = locale === 'da' ? withBase('/') : withBase('/en/');
 const otherLocale = locale === 'da' ? withBase('/en/') : withBase('/');
+const projectsPath = withBase('/projects/');
+const pageLink = page === 'projects' ? home : otherLocale;
+const pageLinkLabel = page === 'projects' ? 'CV' : locale === 'da' ? 'EN' : 'DA';
+const pageLinkLabelLong = page === 'projects'
+  ? 'Back to the English CV'
+  : locale === 'da'
+    ? 'View in English'
+    : 'Se siden på dansk';
 const navItems = [
-  ['profile', labels.profile[locale]], ['orbit', labels.path[locale]], ['experience', labels.work[locale]], ['projects', labels.projects[locale]], ['contact', labels.contact[locale]]
+  { id: 'profile', label: labels.profile[locale], href: `${home}#profile` },
+  { id: 'orbit', label: labels.path[locale], href: `${home}#orbit` },
+  { id: 'experience', label: labels.work[locale], href: `${home}#experience` },
+  { id: 'projects', label: labels.projects[locale], href: projectsPath },
+  { id: 'contact', label: labels.contact[locale], href: `${home}#contact` }
 ];
 ---
 <header class="site-header is-dark" data-header>
   <a class="monogram" href={home} aria-label={`${site.name} — home`}>{site.monogram}</a>
   <nav class="desktop-nav" aria-label={locale === 'da' ? 'Primær navigation' : 'Primary navigation'}>
-    {navItems.map(([id, label]) => <a class="nav-link" href={`#${id}`}>{label}</a>)}
+    {navItems.map((item) => (
+      <a
+        class:list={['nav-link', { 'is-current': page === 'projects' && item.id === 'projects' }]}
+        href={item.href}
+        aria-current={page === 'projects' && item.id === 'projects' ? 'page' : undefined}
+      >
+        {item.label}
+      </a>
+    ))}
   </nav>
-  <a class="lang-link" href={otherLocale} hreflang={locale === 'da' ? 'en' : 'da'}>{locale === 'da' ? 'EN' : 'DA'} <span aria-hidden="true">↗</span></a>
+  <a
+    class="lang-link"
+    href={pageLink}
+    hreflang={page === 'portfolio' ? (locale === 'da' ? 'en' : 'da') : undefined}
+    aria-label={pageLinkLabelLong}
+  >
+    {pageLinkLabel} <span aria-hidden="true">{page === 'projects' ? '↙' : '↗'}</span>
+  </a>
   <button class="menu-toggle" type="button" aria-label={locale === 'da' ? 'Åbn menu' : 'Open menu'} aria-expanded="false" data-menu-open>
     <span class="menu-icon" aria-hidden="true"><i></i><i></i><i></i></span>
   </button>
@@ -28,13 +60,20 @@ const navItems = [
   <div class="menu-inner">
     <nav aria-label={locale === 'da' ? 'Menunavigation' : 'Menu navigation'}>
       <ol class="menu-links">
-        {navItems.map(([id, label], index) => (
-          <li><a href={`#${id}`} data-menu-link><small>0{index + 1}</small>{label}</a></li>
+        {navItems.map((item, index) => (
+          <li>
+            <a href={item.href} data-menu-link>
+              <small>0{index + 1}</small>{item.label}
+            </a>
+          </li>
         ))}
       </ol>
     </nav>
     <aside class="menu-preview" aria-hidden="true">
-      <div class="menu-preview-copy"><span class="eyebrow">Gabriel Back</span><strong>{locale === 'da' ? 'Systemer med en virkelig opgave.' : 'Systems with a real job to do.'}</strong></div>
+      <div class="menu-preview-copy">
+        <span class="eyebrow">Gabriel Back</span>
+        <strong>{page === 'projects' ? 'Products that made it into the world.' : locale === 'da' ? 'Systemer med en virkelig opgave.' : 'Systems with a real job to do.'}</strong>
+      </div>
     </aside>
   </div>
 </dialog>

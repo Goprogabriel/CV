@@ -2,13 +2,20 @@
 import MediaFrame from '@/components/common/MediaFrame.astro';
 import { projects } from '@/content/projects';
 import type { Locale } from '@/types/content';
+import { withBase } from '@/utils/paths';
 const { locale } = Astro.props as { locale: Locale };
 ---
 <section class="section section--dark" id="projects" data-nav-theme="dark">
   <div class="shell">
     <div class="project-head reveal">
       <h2 class="section-title">{locale === 'da' ? 'Produkter, jeg selv har ført ud i verden.' : 'Products I have taken into the world.'}</h2>
-      <p class="lead">{locale === 'da' ? 'Mobile apps og driftsværktøjer — bygget, udgivet og brugt.' : 'Mobile apps and operations tools — built, shipped and used.'}</p>
+      <div>
+        <p class="lead">{locale === 'da' ? 'Mobile apps og driftsværktøjer — bygget, udgivet og brugt.' : 'Mobile apps and operations tools — built, shipped and used.'}</p>
+        <a class="button" href={withBase('/projects/')}>
+          {locale === 'da' ? 'Se alle otte projekter' : 'View all eight projects'}
+          <span aria-hidden="true">↗</span>
+        </a>
+      </div>
     </div>
     <div class="project-rail" data-project-rail tabindex="0" aria-label={locale === 'da' ? 'Projektgalleri. Scroll vandret eller træk.' : 'Project gallery. Scroll horizontally or drag.'}>
       {projects.map((project) => (
@@ -16,7 +23,15 @@ const { locale } = Astro.props as { locale: Locale };
           <figure class="project-visual">
             {project.images[0] && <MediaFrame media={project.images[0]} locale={locale} />}
           </figure>
-          <div class="project-copy"><p class="eyebrow">{project.eyebrow[locale]}</p><h3>{project.name}</h3><p>{project.description[locale]}</p><ul class="tag-list">{project.technologies.map((tech) => <li class="tag">{tech}</li>)}</ul><div class="project-links">{project.repo && <a href={project.repo}>GitHub</a>}{project.demo && <a href={project.demo}>{locale === 'da' ? 'Live demo' : 'Live demo'}</a>}<span>{project.status[locale]}</span></div></div>
+          <div class="project-copy">
+            <p class="eyebrow">{project.eyebrow[locale]}</p>
+            <h3>{project.name}</h3>
+            <p>{project.description[locale]}</p>
+            <ul class="tag-list">
+              {project.technologies.map((technology) => <li class="tag">{technology}</li>)}
+            </ul>
+            <div class="project-links"><span>{project.status[locale]}</span></div>
+          </div>
         </article>
       ))}
     </div>

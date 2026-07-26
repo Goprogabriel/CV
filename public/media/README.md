@@ -25,6 +25,7 @@ Image paths live in:
 - `src/content/profile.ts` for portraits and profile images.
 - `src/content/experience.ts` for company/case-study imagery.
 - `src/content/projects.ts` for project screenshots.
+- `src/content/projectShowcase.ts` for the full project directory.
 
 Every image entry includes Danish and English alternative text. Update both descriptions when replacing an image.
 
@@ -40,6 +41,12 @@ Every image entry includes Danish and English alternative text. Update both desc
 | `projects/partypal-app-store-ranking.jpg` | PartyPal project card |
 | `projects/busbus-euroman-article.jpg` | BUSBUS project card |
 | `projects/mobile-systems-apps.jpg` | Mobile Systems Lab project card |
+| `projects/open-dictate-app.jpg` | Open Dictate project directory entry |
+| `projects/busbus-site.jpg` | BUSBUS project directory entry |
+| `projects/sidste-runde-app-store.jpg` | Sidste Runde project directory entry |
+| `projects/nomad-properties-site.jpg` | Nomad Properties project directory entry |
+| `projects/flower-site.jpg` | Flower project directory entry |
+| `projects/gettested-site.jpg` | GetTestedNow project directory entry |
 | `gallery/gabriel-travel-station.jpg` | Personal archive |
 | `company-logos/nomad-properties.png` | Nomad Properties experience |
 | `company-logos/estatetool.png` | Estatetool experience |

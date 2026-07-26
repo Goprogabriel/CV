@@ -110,6 +110,39 @@ const setupMotion = async () => {
     once: true,
     onEnter: (elements) => gsap.fromTo(elements, { opacity: 0, y: 34 }, { opacity: 1, y: 0, duration: .8, stagger: .1, ease: 'power3.out' })
   });
+  gsap.utils.toArray<HTMLElement>('[data-showcase-card]').forEach((card) => {
+    const image = card.querySelector<HTMLImageElement>('.showcase-project-media img');
+    gsap.fromTo(
+      card,
+      { opacity: 0, y: 60 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: card, start: 'top 88%', once: true }
+      }
+    );
+    if (image) {
+      gsap.fromTo(
+        image,
+        { yPercent: -5 },
+        {
+          yPercent: 5,
+          ease: 'none',
+          scrollTrigger: { trigger: card, start: 'top bottom', end: 'bottom top', scrub: .7 }
+        }
+      );
+    }
+  });
+  const projectsHeroGrid = document.querySelector<HTMLElement>('.projects-hero-grid');
+  if (projectsHeroGrid) {
+    gsap.to(projectsHeroGrid, {
+      yPercent: 18,
+      ease: 'none',
+      scrollTrigger: { trigger: '.projects-hero', start: 'top top', end: 'bottom top', scrub: .8 }
+    });
+  }
   document.querySelectorAll<HTMLDetailsElement>('.experience-item').forEach((detail) => {
     detail.addEventListener('toggle', () => {
       if (!detail.open) return;
@@ -131,7 +164,11 @@ const setupMotion = async () => {
   const details = [...document.querySelectorAll<HTMLElement>('[data-orbit-detail]')];
   const progress = document.querySelector<SVGCircleElement>('[data-orbit-progress]');
   const count = document.querySelector<HTMLElement>('[data-orbit-count]');
-  if (!scrollWrap || !pin || !stage || !ring || !nodes.length || matchMedia('(max-width: 740px)').matches) return;
+  if (!scrollWrap || !pin || !stage || !ring || !nodes.length || matchMedia('(max-width: 740px)').matches) {
+    ScrollTrigger.sort();
+    ScrollTrigger.refresh();
+    return;
+  }
 
   const step = 360 / nodes.length;
   let active = 0;

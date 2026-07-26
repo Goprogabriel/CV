@@ -13,13 +13,21 @@ interface Props {
   title?: string;
   description?: string;
   hideNavigation?: boolean;
+  navigationMode?: 'portfolio' | 'projects';
 }
 
-const { locale, title = site.title[locale], description = site.description[locale], hideNavigation = false } = Astro.props;
+const {
+  locale,
+  title = site.title[locale],
+  description = site.description[locale],
+  hideNavigation = false,
+  navigationMode = 'portfolio'
+} = Astro.props;
 const base = import.meta.env.BASE_URL;
 const canonical = new URL(Astro.url.pathname, Astro.site || Astro.url.origin);
 const altDa = new URL(withBase('/'), Astro.site || Astro.url.origin);
 const altEn = new URL(withBase('/en/'), Astro.site || Astro.url.origin);
+const hasLanguageAlternates = navigationMode === 'portfolio';
 const jsonLd = {
   '@context': 'https://schema.org', '@type': 'Person',
   name: profile.name,
@@ -40,9 +48,9 @@ const jsonLd = {
     <meta name="description" content={description} />
     <meta name="theme-color" content="#0d463d" />
     <link rel="canonical" href={canonical} />
-    <link rel="alternate" hreflang="da" href={altDa} />
-    <link rel="alternate" hreflang="en" href={altEn} />
-    <link rel="alternate" hreflang="x-default" href={altDa} />
+    {hasLanguageAlternates && <link rel="alternate" hreflang="da" href={altDa} />}
+    {hasLanguageAlternates && <link rel="alternate" hreflang="en" href={altEn} />}
+    {hasLanguageAlternates && <link rel="alternate" hreflang="x-default" href={altDa} />}
     <link rel="icon" type="image/svg+xml" href={withBase('/icons/favicon.svg')} />
     <link rel="apple-touch-icon" href={withBase('/icons/apple-touch-icon.png')} />
     <link rel="manifest" href={withBase('/manifest.webmanifest')} />
@@ -60,7 +68,7 @@ const jsonLd = {
   <body>
     <a class="skip-link" href="#main">{locale === 'da' ? 'Gå til indhold' : 'Skip to content'}</a>
     {!hideNavigation && <Loader locale={locale} />}
-    {!hideNavigation && <Navigation locale={locale} />}
+    {!hideNavigation && <Navigation locale={locale} page={navigationMode} />}
     <slot />
     {!hideNavigation && <div class="custom-cursor" aria-hidden="true" data-cursor></div>}
     {!hideNavigation && <script>import '@/scripts/site';</script>}
