@@ -22,7 +22,13 @@ const orbitLabels: Record<string, { da: string; en: string }> = {
 <section class="section section--dark" id="orbit" data-nav-theme="dark">
   <div class="shell">
     <div class="orbit-header reveal">
-      <div><p class="eyebrow">{locale === 'da' ? 'Karriereforløb' : 'Career path'}</p><h2 class="section-title" data-title-reveal>{locale === 'da' ? 'Fra support til Head of IT.' : 'From support to Head of IT.'}</h2></div>
+      <div>
+        <p class="eyebrow">{locale === 'da' ? 'Karriereforløb' : 'Career path'}</p>
+        <h2 class="section-title" data-title-reveal>
+          <span>{locale === 'da' ? 'Fra support' : 'From support'}</span>{' '}
+          <span>{locale === 'da' ? 'til Head of IT.' : 'to Head of IT.'}</span>
+        </h2>
+      </div>
       <p class="lead">{locale === 'da' ? 'Tæt på brugerne først. Mere ansvar for produkt, kode og drift siden.' : 'Close to users first. Then increasing ownership of product, code and operations.'}</p>
     </div>
     <div class="orbit-scroll" data-orbit-scroll>

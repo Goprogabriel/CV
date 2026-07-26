@@ -63,19 +63,6 @@ const setupMagnetic = () => {
   });
 };
 
-const setupCursor = () => {
-  const cursor = document.querySelector<HTMLElement>('[data-cursor]');
-  if (!cursor || reducedMotion || !matchMedia('(pointer: fine)').matches) return;
-  let x = -20; let y = -20; let raf = 0;
-  const paint = () => { cursor.style.left = `${x}px`; cursor.style.top = `${y}px`; raf = 0; };
-  window.addEventListener('pointermove', (event) => { x = event.clientX; y = event.clientY; cursor.classList.add('is-visible'); if (!raf) raf = requestAnimationFrame(paint); }, { passive: true });
-  document.querySelectorAll('a, button, summary, [data-project-rail]').forEach((item) => {
-    item.addEventListener('pointerenter', () => cursor.classList.add('is-active'));
-    item.addEventListener('pointerleave', () => cursor.classList.remove('is-active'));
-  });
-  document.documentElement.addEventListener('mouseleave', () => cursor.classList.remove('is-visible'));
-};
-
 const setupMotion = async () => {
   if (reducedMotion) return;
   const gsapModule = await import('gsap');
@@ -269,5 +256,4 @@ setupTabs();
 setupProjectRail();
 setupLightbox();
 setupMagnetic();
-setupCursor();
 setupMotion();
