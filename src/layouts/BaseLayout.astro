@@ -70,6 +70,7 @@ const jsonLd = {
     {!hideNavigation && <Loader locale={locale} />}
     {!hideNavigation && <Navigation locale={locale} page={navigationMode} />}
     <slot />
+    {!hideNavigation && <div class="custom-cursor" aria-hidden="true" data-cursor></div>}
     {!hideNavigation && <script>import '@/scripts/site';</script>}
   </body>
 </html>

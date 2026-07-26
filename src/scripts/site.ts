@@ -63,6 +63,37 @@ const setupMagnetic = () => {
   });
 };
 
+const setupCursor = () => {
+  const cursor = document.querySelector<HTMLElement>('[data-cursor]');
+  if (!cursor || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+  document.documentElement.classList.add('has-custom-cursor');
+  const interactive = 'a, button, summary, input, [data-project-rail]';
+  let x = -40;
+  let y = -40;
+  let frame = 0;
+
+  const paint = () => {
+    cursor.style.left = `${x}px`;
+    cursor.style.top = `${y}px`;
+    frame = 0;
+  };
+
+  window.addEventListener('pointermove', (event) => {
+    x = event.clientX;
+    y = event.clientY;
+    const target = event.target;
+    cursor.classList.add('is-visible');
+    cursor.classList.toggle('is-active', target instanceof Element && Boolean(target.closest(interactive)));
+    if (!frame) frame = requestAnimationFrame(paint);
+  }, { passive: true });
+
+  window.addEventListener('pointerdown', () => cursor.classList.add('is-pressed'));
+  window.addEventListener('pointerup', () => cursor.classList.remove('is-pressed'));
+  window.addEventListener('blur', () => cursor.classList.remove('is-visible'));
+  document.documentElement.addEventListener('mouseleave', () => cursor.classList.remove('is-visible'));
+};
+
 const setupMotion = async () => {
   if (reducedMotion) return;
   const gsapModule = await import('gsap');
@@ -256,4 +287,5 @@ setupTabs();
 setupProjectRail();
 setupLightbox();
 setupMagnetic();
+setupCursor();
 setupMotion();
