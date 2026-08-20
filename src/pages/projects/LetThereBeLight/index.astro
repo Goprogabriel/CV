@@ -8,63 +8,63 @@ const projectPath = withBase('/projects/');
 
 <BaseLayout
   locale="en"
-  title="LetThereBeLight — Live depth relighting by Gabriel Back"
-  description="Move a virtual light through a live camera scene using real-time monocular depth estimation and WebGPU."
+  title="LetThereBeLight — Live hand-controlled relighting by Gabriel Back"
+  description="Move a virtual light through a live camera scene with your hand using on-device MediaPipe tracking, monocular depth estimation and WebGPU."
   navigationMode="projects"
   ogImage="/media/projects/let-there-be-light.jpg"
 >
   <main id="main" class="light-experience" data-light-app>
     <section class="light-workspace" data-nav-theme="dark">
-      <div class="light-intro">
-        <div>
+      <div class="light-stage" data-light-stage data-state="busy">
+        <canvas
+          class="light-canvas"
+          data-light-canvas
+          width="1"
+          height="1"
+          aria-label="Live camera with hand-controlled virtual lighting"
+        ></canvas>
+        <canvas class="light-hand-overlay" data-hand-overlay width="1" height="1" aria-hidden="true"></canvas>
+        <video data-light-video autoplay muted playsinline hidden></video>
+
+        <div class="light-vignette" aria-hidden="true"></div>
+
+        <header class="light-project-card">
           <p class="eyebrow">Interactive project · WebGPU</p>
-          <h1>LetThereBeLight</h1>
-          <p class="light-lead">
-            A live camera that understands depth, so a virtual light can move through the scene
-            as if it were really there.
-          </p>
-        </div>
-
-        <ol class="light-instructions" aria-label="How to use the project">
-          <li><span>01</span><p><strong>Allow the camera.</strong> Processing stays on your device.</p></li>
-          <li><span>02</span><p><strong>Drag or tap.</strong> Place the light anywhere in the frame.</p></li>
-          <li><span>03</span><p><strong>Pinch or scroll.</strong> Move the light closer or farther away.</p></li>
-        </ol>
-
-        <div class="light-intro-footer">
-          <p>First visit downloads the 68 MB large depth model.</p>
+          <h1 aria-label="LetThereBeLight"><span aria-hidden="true">LetThereBe</span><span aria-hidden="true">Light</span></h1>
+          <p>Point with one hand to move the light through the live scene.</p>
           <a href={projectPath}>Project directory <span aria-hidden="true">↙</span></a>
+        </header>
+
+        <div class="light-hud" aria-label="Live project status">
+          <span class="light-live"><i></i> Live camera</span>
+          <span data-hand-status data-state="loading"><i></i><b>Loading hand control</b></span>
+          <span class="light-device">Large depth model · on device</span>
         </div>
-      </div>
 
-      <div class="light-stage-wrap">
-        <div class="light-stage" data-light-stage data-state="busy">
-          <canvas
-            class="light-canvas"
-            data-light-canvas
-            width="1"
-            height="1"
-            aria-label="Live camera with interactive virtual lighting"
-          ></canvas>
-          <video data-light-video autoplay muted playsinline hidden></video>
-
-          <div class="light-stage-grid" aria-hidden="true"></div>
-
-          <div class="light-hud" aria-hidden="true">
-            <span class="light-live"><i></i> Live camera</span>
-            <span>Large model · on device</span>
-          </div>
-
-          <div class="light-status" data-light-status role="status" aria-live="polite">
-            <span class="light-spinner" aria-hidden="true"></span>
-            <p class="light-status-kicker" data-status-kicker>Preparing WebGPU</p>
-            <p class="light-status-message" data-status-message>Connecting to your graphics processor…</p>
-            <button class="light-retry" data-light-retry type="button" hidden>Try again</button>
-          </div>
-
-          <p class="light-gesture-hint" aria-hidden="true">Drag the light · pinch for depth</p>
-          <button class="light-credits-trigger" data-credits-open type="button">Credits <span>↗</span></button>
+        <div class="light-hand-guide" data-hand-guide>
+          <span class="light-hand-guide-icon" aria-hidden="true">
+            <i></i><i></i><i></i><i></i><i></i>
+          </span>
+          <p><strong>Raise one hand.</strong> Your index finger places the light.</p>
+          <div><span>← → · left / right</span><span>↑ ↓ · up / down</span><span>near / far · depth</span></div>
         </div>
+
+        <div class="light-depth-meter" data-depth-meter aria-hidden="true">
+          <span>Near</span>
+          <div><i></i></div>
+          <span>Far</span>
+        </div>
+
+        <div class="light-status" data-light-status role="status" aria-live="polite">
+          <span class="light-spinner" aria-hidden="true"></span>
+          <p class="light-status-kicker" data-status-kicker>Preparing WebGPU</p>
+          <p class="light-status-message" data-status-message>Connecting to your graphics processor…</p>
+          <p class="light-status-note">Camera and hand processing stay on this device.</p>
+          <button class="light-retry" data-light-retry type="button" hidden>Try again</button>
+        </div>
+
+        <p class="light-gesture-hint">Finger controls position · move your hand closer or farther for depth</p>
+        <button class="light-credits-trigger" data-credits-open type="button">Credits <span>↗</span></button>
       </div>
     </section>
   </main>
@@ -91,6 +91,18 @@ const projectPath = withBase('/projects/');
       </header>
 
       <div class="settings-scroll">
+        <div class="hand-control-setting">
+          <div>
+            <strong>Hand control</strong>
+            <small>Index finger moves the light. Hand distance controls depth.</small>
+          </div>
+          <label class="settings-toggle">
+            <input data-hand-toggle type="checkbox" checked />
+            <span aria-hidden="true"></span>
+            <span class="sr-only">Enable hand control</span>
+          </label>
+        </div>
+
         <fieldset class="camera-switch">
           <legend>Camera</legend>
           <label><input type="radio" name="camera-facing" value="front" checked /><span>Front</span></label>
@@ -127,7 +139,7 @@ const projectPath = withBase('/projects/');
         <button class="settings-reset" data-settings-reset type="button">Reset light settings</button>
 
         <div class="settings-storage">
-          <label><input data-cache-toggle type="checkbox" checked /> Keep the model on this device</label>
+          <label><input data-cache-toggle type="checkbox" checked /> Keep the depth model on this device</label>
           <button data-clear-cache type="button">Clear downloaded model</button>
         </div>
 
@@ -138,6 +150,10 @@ const projectPath = withBase('/projects/');
             <a href="https://github.com/software-mansion/TypeGPU/tree/main/apps/typegpu-docs/src/examples/image-processing/monocular-light-injection" target="_blank" rel="noreferrer">Monocular Light Injection experiment</a>
             in TypeGPU by Software Mansion, created by
             <a href="https://x.com/reczko_konrad" target="_blank" rel="noreferrer">Konrad Reczko</a>.
+          </p>
+          <p>
+            Browser-based hand landmarks are provided by
+            <a href="https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker/web_js" target="_blank" rel="noreferrer">Google MediaPipe Hand Landmarker</a>.
           </p>
           <p class="light-credits-note">Interface adaptation and CV integration by Gabriel Back.</p>
         </aside>

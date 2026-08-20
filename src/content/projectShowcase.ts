@@ -11,6 +11,7 @@ export interface ShowcaseProject {
   imageFit?: 'cover' | 'contain';
   imagePosition?: string;
   href?: string;
+  titleLines?: readonly string[];
 }
 
 export const showcaseProjects: ShowcaseProject[] = [
@@ -20,14 +21,15 @@ export const showcaseProjects: ShowcaseProject[] = [
     category: 'Interactive WebGPU',
     status: 'Live experiment',
     summary:
-      'A camera experiment where a monocular depth model turns a flat video feed into a scene that can be relit in real time.',
+      'Move a virtual light through live camera depth with your hand — left, right, up, down, closer or farther.',
     contribution:
-      'Adapted the original TypeGPU demo into a focused product experience with automatic large-model loading, touch-first light controls, camera switching and a responsive interface.',
-    technologies: ['TypeGPU', 'WebGPU', 'TypeScript', 'DepthART', 'MediaDevices'],
+      'Turned the original TypeGPU demo into a full-screen browser experience with automatic DepthART loading, MediaPipe hand tracking, 3D light movement and touch or mouse fallback.',
+    technologies: ['TypeGPU', 'WebGPU', 'MediaPipe', 'DepthART', 'TypeScript'],
     image: '/media/projects/let-there-be-light.jpg',
     imageAlt: 'A dark green interior transformed by one warm, depth-aware light source',
     imagePosition: 'center center',
-    href: '/projects/LetThereBeLight/'
+    href: '/projects/LetThereBeLight/',
+    titleLines: ['LetThereBe', 'Light']
   },
   {
     id: 'open-dictate',

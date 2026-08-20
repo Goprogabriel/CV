@@ -1,6 +1,7 @@
 import { tgpu } from 'typegpu';
 import type { TgpuRoot } from 'typegpu';
 import { DepthCameraSession } from './camera-session.ts';
+import { setupHandTracking } from './hand-tracking.ts';
 import { parseDepthBundle } from './inference/bundle.ts';
 import { DepthInferencePlan } from './inference/depthart.ts';
 import { setupLightInput } from './light-input.ts';
@@ -37,6 +38,10 @@ const video = requiredElement(
   app.querySelector<HTMLVideoElement>('[data-light-video]'),
   'the camera video',
 );
+const handOverlay = requiredElement(
+  app.querySelector<HTMLCanvasElement>('[data-hand-overlay]'),
+  'the hand overlay',
+);
 const stage = requiredElement(app.querySelector<HTMLElement>('[data-light-stage]'), 'the stage');
 const status = requiredElement(app.querySelector<HTMLElement>('[data-light-status]'), 'the status');
 const statusKicker = requiredElement(
@@ -62,6 +67,18 @@ const settingsDialog = requiredElement(
 const settingsClose = settingsDialog?.querySelector<HTMLButtonElement>('[data-settings-close]');
 const creditsButton = app?.querySelector<HTMLButtonElement>('[data-credits-open]');
 const credits = settingsDialog?.querySelector<HTMLElement>('[data-credits]');
+const handStatus = requiredElement(
+  app.querySelector<HTMLElement>('[data-hand-status]'),
+  'the hand tracking status',
+);
+const handStatusText = requiredElement(
+  handStatus.querySelector<HTMLElement>('b'),
+  'the hand tracking status text',
+);
+const depthMeter = requiredElement(
+  app.querySelector<HTMLElement>('[data-depth-meter]'),
+  'the light depth meter',
+);
 
 const listenerController = new AbortController();
 const { signal } = listenerController;
@@ -119,6 +136,26 @@ const light = setupLightInput(
   signal,
 );
 
+const handTracking = setupHandTracking(
+  video,
+  handOverlay,
+  {
+    onState: (state, message) => {
+      handStatus.dataset.state = state;
+      handStatusText.textContent = message;
+      light.setHandTrackingActive(state !== 'off' && state !== 'error');
+    },
+    onUpdate: ({ position, lightZ, depthProgress }) => {
+      stage.dataset.handSeen = 'true';
+      depthMeter.style.setProperty('--light-depth', String(depthProgress));
+      light.setTrackedLight(position, lightZ);
+    },
+  },
+  signal,
+);
+
+void handTracking.init().catch(() => undefined);
+
 const camera = new DepthCameraSession(
   video,
   {
@@ -127,6 +164,7 @@ const camera = new DepthCameraSession(
         return;
       }
       try {
+        handTracking.sampleFrame(performance.now(), facing === 'front');
         light.orbitTick();
         renderer.render(frame);
         clearStatus();
@@ -280,6 +318,8 @@ async function setFacing(nextFacing: Facing): Promise<void> {
     return;
   }
   facing = nextFacing;
+  handTracking.reset();
+  delete stage.dataset.handSeen;
   camera.facingMode = facing === 'front' ? 'user' : 'environment';
   renderer?.update({ mirror: facing === 'front' });
   if (!camera.active) {
@@ -330,6 +370,18 @@ colorInput?.addEventListener(
   () => {
     visualSettings.lightColor = hexToRgb(colorInput.value);
     applyVisualSettings();
+  },
+  { signal },
+);
+
+const handToggle = settingsDialog.querySelector<HTMLInputElement>('[data-hand-toggle]');
+handToggle?.addEventListener(
+  'change',
+  () => {
+    handTracking.setEnabled(handToggle.checked);
+    if (handToggle.checked) {
+      delete stage.dataset.handSeen;
+    }
   },
   { signal },
 );
@@ -441,6 +493,7 @@ function cleanup(): void {
   }
   disposed = true;
   listenerController.abort();
+  handTracking.destroy();
   camera.destroy();
   destroyGpuResources();
 }

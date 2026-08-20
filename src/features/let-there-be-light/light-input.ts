@@ -31,6 +31,8 @@ interface LightInput {
   readonly lightZ: number;
   /** Advances the idle orbit; call once per rendered frame */
   orbitTick(): void;
+  setTrackedLight(position: [number, number], depth: number): void;
+  setHandTrackingActive(active: boolean): void;
 }
 
 function clamp(value: number, min: number, max: number): number {
@@ -46,6 +48,7 @@ export function setupLightInput(
   const pointers = new Map<number, { x: number; y: number }>();
   let gesture: Gesture = { kind: 'none' };
   let control: LightControl = LightControl.ORBIT;
+  let handTrackingActive = false;
   let lightPosition: [number, number] = [...defaultRelightingSettings.lightPosition];
   let lightZ = defaultRelightingSettings.lightZ;
 
@@ -203,7 +206,7 @@ export function setupLightInput(
       return lightZ;
     },
     orbitTick() {
-      if (control !== LightControl.ORBIT) {
+      if (control !== LightControl.ORBIT || handTrackingActive) {
         return;
       }
       const phase = performance.now() * ORBIT_SPEED;
@@ -211,6 +214,19 @@ export function setupLightInput(
         0.5 + Math.cos(phase) * ORBIT_RADIUS,
         0.44 + Math.sin(phase * 1.37) * ORBIT_RADIUS * 0.8,
       );
+    },
+    setTrackedLight(position, depth) {
+      handTrackingActive = true;
+      control = LightControl.PINNED;
+      placeLight(position[0], position[1]);
+      lightZ = clamp(depth, LIGHT_Z_MIN, LIGHT_Z_MAX);
+      onChange({ lightZ });
+    },
+    setHandTrackingActive(active) {
+      handTrackingActive = active;
+      if (!active && control === LightControl.ORBIT) {
+        control = LightControl.PINNED;
+      }
     },
   };
 }

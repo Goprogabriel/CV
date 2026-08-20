@@ -65,7 +65,15 @@ const repeatedNames = [...showcaseProjects, ...showcaseProjects];
             <div class="showcase-project-copy">
               <p class="eyebrow">{project.category}</p>
               {project.href ? (
-                <h2><a class="showcase-project-title-link" href={withBase(project.href)}>{project.name}</a></h2>
+                <h2>
+                  <a class="showcase-project-title-link" href={withBase(project.href)}>
+                    {project.titleLines ? (
+                      <span class="showcase-project-title-lines">
+                        {project.titleLines.map((line) => <span>{line}</span>)}
+                      </span>
+                    ) : project.name}
+                  </a>
+                </h2>
               ) : <h2>{project.name}</h2>}
               <p class="showcase-project-summary">{project.summary}</p>
               <div class="showcase-project-contribution">

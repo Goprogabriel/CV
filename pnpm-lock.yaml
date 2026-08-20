@@ -11,6 +11,9 @@ importers:
       '@astrojs/sitemap':
         specifier: ^3.4.1
         version: 3.7.3
+      '@mediapipe/tasks-vision':
+        specifier: 1.0.1
+        version: 1.0.1
       astro:
         specifier: ^5.12.0
         version: 5.18.2(@types/node@24.13.3)(rollup@4.62.2)(supports-color@7.2.0)(tsover@6.0.2)(yaml@2.9.0)
@@ -710,6 +713,9 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@mediapipe/tasks-vision@1.0.1':
+    resolution: {integrity: sha512-rvRE2FmAZ6ZxKSw7wq+e+jQDpN3t1B/tD2mJz9SmAzb1msoDkd4dMoE4wAh8Z30Um0PQwLiHr9QtomhmXk3aUQ==}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -3199,6 +3205,8 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@mediapipe/tasks-vision@1.0.1': {}
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
