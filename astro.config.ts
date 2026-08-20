@@ -1,5 +1,6 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+import typegpu from 'unplugin-typegpu/vite';
 
 const site = process.env.SITE_URL || 'https://goprogabriel.github.io';
 const rawBase = process.env.BASE_PATH || '';
@@ -11,5 +12,6 @@ export default defineConfig({
   output: 'static',
   trailingSlash: 'always',
   integrations: [sitemap()],
+  vite: { plugins: [typegpu()] },
   build: { format: 'directory' }
 });

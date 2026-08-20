@@ -272,11 +272,16 @@ img { display: block; max-width: 100%; }
 .showcase-project-copy { display: flex; min-width: 0; flex-direction: column; justify-content: center; padding: clamp(2.5rem, 5vw, 5rem); }
 .showcase-project-copy .eyebrow { margin-bottom: .6rem; color: #647a73; }
 .showcase-project-copy h2 { margin: 0 0 1.25rem; font-family: var(--serif); font-size: clamp(3.25rem, 5vw, 5.5rem); font-weight: 400; line-height: .95; letter-spacing: -.035em; }
+.showcase-project-title-link { text-decoration: none; }
+.showcase-project-title-link:hover { color: var(--accent); }
 .showcase-project-summary { max-width: 38rem; margin: 0; font-size: clamp(1rem, 1.25vw, 1.15rem); line-height: 1.58; }
 .showcase-project-contribution { display: grid; grid-template-columns: 5rem 1fr; gap: 1rem; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--line); }
 .showcase-project-contribution span { padding-top: .1rem; font-size: .64rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
 .showcase-project-contribution p { margin: 0; font-size: .9rem; line-height: 1.6; }
 .showcase-project .tag-list { margin-top: 1.5rem; }
+.showcase-project-launch { display: inline-flex; align-items: center; align-self: flex-start; gap: .65rem; margin-top: 1.5rem; padding-bottom: .3rem; border-bottom: 1px solid currentColor; font-size: .7rem; font-weight: 800; letter-spacing: .1em; text-decoration: none; text-transform: uppercase; }
+.showcase-project-launch span { transition: transform .35s var(--ease-editorial); }
+.showcase-project-launch:hover span { transform: translate(.2rem, -.2rem); }
 .projects-outro { padding-block: clamp(6rem, 12vw, 12rem); border-top: 1px solid var(--line-light); }
 .projects-outro-inner { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(18rem, .55fr); gap: 2rem clamp(3rem, 8vw, 9rem); align-items: end; }
 .projects-outro-inner .eyebrow { grid-column: 1 / -1; }

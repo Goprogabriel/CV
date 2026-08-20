@@ -1,0 +1,151 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { withBase } from '@/utils/paths';
+import '@/styles/let-there-be-light.css';
+
+const projectPath = withBase('/projects/');
+---
+
+<BaseLayout
+  locale="en"
+  title="LetThereBeLight — Live depth relighting by Gabriel Back"
+  description="Move a virtual light through a live camera scene using real-time monocular depth estimation and WebGPU."
+  navigationMode="projects"
+  ogImage="/media/projects/let-there-be-light.jpg"
+>
+  <main id="main" class="light-experience" data-light-app>
+    <section class="light-workspace" data-nav-theme="dark">
+      <div class="light-intro">
+        <div>
+          <p class="eyebrow">Interactive project · WebGPU</p>
+          <h1>LetThereBeLight</h1>
+          <p class="light-lead">
+            A live camera that understands depth, so a virtual light can move through the scene
+            as if it were really there.
+          </p>
+        </div>
+
+        <ol class="light-instructions" aria-label="How to use the project">
+          <li><span>01</span><p><strong>Allow the camera.</strong> Processing stays on your device.</p></li>
+          <li><span>02</span><p><strong>Drag or tap.</strong> Place the light anywhere in the frame.</p></li>
+          <li><span>03</span><p><strong>Pinch or scroll.</strong> Move the light closer or farther away.</p></li>
+        </ol>
+
+        <div class="light-intro-footer">
+          <p>First visit downloads the 68 MB large depth model.</p>
+          <a href={projectPath}>Project directory <span aria-hidden="true">↙</span></a>
+        </div>
+      </div>
+
+      <div class="light-stage-wrap">
+        <div class="light-stage" data-light-stage data-state="busy">
+          <canvas
+            class="light-canvas"
+            data-light-canvas
+            width="1"
+            height="1"
+            aria-label="Live camera with interactive virtual lighting"
+          ></canvas>
+          <video data-light-video autoplay muted playsinline hidden></video>
+
+          <div class="light-stage-grid" aria-hidden="true"></div>
+
+          <div class="light-hud" aria-hidden="true">
+            <span class="light-live"><i></i> Live camera</span>
+            <span>Large model · on device</span>
+          </div>
+
+          <div class="light-status" data-light-status role="status" aria-live="polite">
+            <span class="light-spinner" aria-hidden="true"></span>
+            <p class="light-status-kicker" data-status-kicker>Preparing WebGPU</p>
+            <p class="light-status-message" data-status-message>Connecting to your graphics processor…</p>
+            <button class="light-retry" data-light-retry type="button" hidden>Try again</button>
+          </div>
+
+          <p class="light-gesture-hint" aria-hidden="true">Drag the light · pinch for depth</p>
+          <button class="light-credits-trigger" data-credits-open type="button">Credits <span>↗</span></button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <button
+    class="settings-fab"
+    data-settings-open
+    type="button"
+    aria-label="Open light settings"
+    aria-controls="light-settings"
+    aria-expanded="false"
+  >
+    <span class="settings-icon" aria-hidden="true"><i></i><i></i><i></i></span>
+  </button>
+
+  <dialog id="light-settings" class="light-settings" data-settings-dialog aria-labelledby="settings-title">
+    <div class="settings-panel">
+      <header class="settings-header">
+        <div>
+          <p class="eyebrow">Live controls</p>
+          <h2 id="settings-title">Shape the light.</h2>
+        </div>
+        <button class="settings-close" data-settings-close type="button" aria-label="Close settings">×</button>
+      </header>
+
+      <div class="settings-scroll">
+        <fieldset class="camera-switch">
+          <legend>Camera</legend>
+          <label><input type="radio" name="camera-facing" value="front" checked /><span>Front</span></label>
+          <label><input type="radio" name="camera-facing" value="back" /><span>Back</span></label>
+        </fieldset>
+
+        <div class="setting-list">
+          <label class="setting-row" for="light-intensity">
+            <span>Intensity <output data-output="intensity" for="light-intensity">3</output></span>
+            <input id="light-intensity" data-setting="intensity" type="range" min="0" max="3.5" step="0.05" value="3" />
+          </label>
+          <label class="setting-row" for="light-ambient">
+            <span>Ambient <output data-output="ambient" for="light-ambient">0.5</output></span>
+            <input id="light-ambient" data-setting="ambient" type="range" min="0" max="1.2" step="0.05" value="0.5" />
+          </label>
+          <label class="setting-row" for="light-relief">
+            <span>Relief <output data-output="relief" for="light-relief">0.85</output></span>
+            <input id="light-relief" data-setting="relief" type="range" min="0" max="2.5" step="0.05" value="0.85" />
+          </label>
+          <label class="setting-row" for="light-shadow">
+            <span>Shadow <output data-output="shadow" for="light-shadow">0.7</output></span>
+            <input id="light-shadow" data-setting="shadow" type="range" min="0" max="1" step="0.05" value="0.7" />
+          </label>
+          <label class="setting-row" for="light-occlusion">
+            <span>Occlusion <output data-output="occlusion" for="light-occlusion">0.55</output></span>
+            <input id="light-occlusion" data-setting="occlusion" type="range" min="0" max="1" step="0.05" value="0.55" />
+          </label>
+          <label class="setting-color" for="light-color">
+            <span><strong>Light color</strong><small>Choose a warm or cool source.</small></span>
+            <input id="light-color" data-setting="color" type="color" value="#ffb875" />
+          </label>
+        </div>
+
+        <button class="settings-reset" data-settings-reset type="button">Reset light settings</button>
+
+        <div class="settings-storage">
+          <label><input data-cache-toggle type="checkbox" checked /> Keep the model on this device</label>
+          <button data-clear-cache type="button">Clear downloaded model</button>
+        </div>
+
+        <aside class="light-credits" data-credits tabindex="-1">
+          <p class="eyebrow">Credits</p>
+          <p>
+            Adapted from the
+            <a href="https://github.com/software-mansion/TypeGPU/tree/main/apps/typegpu-docs/src/examples/image-processing/monocular-light-injection" target="_blank" rel="noreferrer">Monocular Light Injection experiment</a>
+            in TypeGPU by Software Mansion, created by
+            <a href="https://x.com/reczko_konrad" target="_blank" rel="noreferrer">Konrad Reczko</a>.
+          </p>
+          <p class="light-credits-note">Interface adaptation and CV integration by Gabriel Back.</p>
+        </aside>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    import '@/features/let-there-be-light/app';
+  </script>
+</BaseLayout>

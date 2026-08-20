@@ -14,6 +14,7 @@ interface Props {
   description?: string;
   hideNavigation?: boolean;
   navigationMode?: 'portfolio' | 'projects';
+  ogImage?: string;
 }
 
 const {
@@ -21,7 +22,8 @@ const {
   title = site.title[locale],
   description = site.description[locale],
   hideNavigation = false,
-  navigationMode = 'portfolio'
+  navigationMode = 'portfolio',
+  ogImage = '/og/portfolio-preview.png'
 } = Astro.props;
 const base = import.meta.env.BASE_URL;
 const canonical = new URL(Astro.url.pathname, Astro.site || Astro.url.origin);
@@ -58,7 +60,7 @@ const jsonLd = {
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={new URL(withBase('/og/portfolio-preview.png'), Astro.site || Astro.url.origin)} />
+    <meta property="og:image" content={new URL(withBase(ogImage), Astro.site || Astro.url.origin)} />
     <meta property="og:locale" content={locale === 'da' ? 'da_DK' : 'en_GB'} />
     <meta name="twitter:card" content="summary_large_image" />
     <title>{title}</title>

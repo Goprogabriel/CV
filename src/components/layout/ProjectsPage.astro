@@ -12,7 +12,7 @@ const repeatedNames = [...showcaseProjects, ...showcaseProjects];
     <div class="projects-hero-grid" aria-hidden="true"></div>
     <div class="shell projects-hero-inner">
       <div class="projects-hero-copy">
-        <p class="eyebrow reveal">Selected work · 08 projects</p>
+        <p class="eyebrow reveal">Selected work · {String(showcaseProjects.length).padStart(2, '0')} projects</p>
         <h1 class="display reveal">Things I have built for real.</h1>
       </div>
 
@@ -39,8 +39,8 @@ const repeatedNames = [...showcaseProjects, ...showcaseProjects];
       <header class="projects-directory-head reveal">
         <p class="rule-label">Project directory</p>
         <p>
-          Each project is shown as a self-contained snapshot. There are no case-study pages or
-          hidden click-throughs here.
+          Each project is shown as a self-contained snapshot. LetThereBeLight also opens as a
+          live, interactive WebGPU experiment.
         </p>
       </header>
 
@@ -64,7 +64,9 @@ const repeatedNames = [...showcaseProjects, ...showcaseProjects];
 
             <div class="showcase-project-copy">
               <p class="eyebrow">{project.category}</p>
-              <h2>{project.name}</h2>
+              {project.href ? (
+                <h2><a class="showcase-project-title-link" href={withBase(project.href)}>{project.name}</a></h2>
+              ) : <h2>{project.name}</h2>}
               <p class="showcase-project-summary">{project.summary}</p>
               <div class="showcase-project-contribution">
                 <span>My part</span>
@@ -73,6 +75,11 @@ const repeatedNames = [...showcaseProjects, ...showcaseProjects];
               <ul class="tag-list" aria-label={`${project.name} technologies`}>
                 {project.technologies.map((technology) => <li class="tag">{technology}</li>)}
               </ul>
+              {project.href && (
+                <a class="showcase-project-launch" href={withBase(project.href)}>
+                  Open interactive project <span aria-hidden="true">↗</span>
+                </a>
+              )}
             </div>
           </article>
         ))}
