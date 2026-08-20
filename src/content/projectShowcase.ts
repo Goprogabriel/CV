@@ -17,15 +17,15 @@ export const showcaseProjects: ShowcaseProject[] = [
   {
     id: 'let-there-be-light',
     name: 'LetThereBeLight',
-    category: 'WebGPU experiment',
-    status: 'Interactive',
+    category: 'Interactive WebGPU',
+    status: 'Live experiment',
     summary:
-      'A live camera experience that estimates depth on-device and lets a virtual light move naturally through the scene in real time.',
+      'A camera experiment where a monocular depth model turns a flat video feed into a scene that can be relit in real time.',
     contribution:
-      'Adapted the TypeGPU monocular light-injection experiment into a focused camera-first project with automatic model loading, responsive controls and a CV-native interface.',
+      'Adapted the original TypeGPU demo into a focused product experience with automatic large-model loading, touch-first light controls, camera switching and a responsive interface.',
     technologies: ['TypeGPU', 'WebGPU', 'TypeScript', 'DepthART', 'MediaDevices'],
     image: '/media/projects/let-there-be-light.jpg',
-    imageAlt: 'A room relit in real time by the monocular light injection experiment',
+    imageAlt: 'A dark green interior transformed by one warm, depth-aware light source',
     imagePosition: 'center center',
     href: '/projects/LetThereBeLight/'
   },

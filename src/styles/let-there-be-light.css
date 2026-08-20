@@ -334,6 +334,17 @@
   color: var(--forest-deep);
 }
 
+/* The portfolio uses a custom cursor on desktop; settings needs the native
+   cursor so sliders, color input and close controls stay easy to use. */
+html.has-custom-cursor body.dialog-open,
+html.has-custom-cursor body.dialog-open * {
+  cursor: auto !important;
+}
+
+body.dialog-open .custom-cursor {
+  opacity: 0 !important;
+}
+
 .settings-icon {
   width: 1.45rem;
   display: grid;
