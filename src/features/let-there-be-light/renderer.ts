@@ -64,6 +64,7 @@ interface RelightingState {
   readonly lightColor: readonly [number, number, number];
   readonly exposure: number;
   readonly intensity: number;
+  readonly bulbSize: number;
   readonly relief: number;
   readonly specular: number;
   readonly shadow: number;
@@ -80,6 +81,7 @@ export const defaultRelightingSettings: RelightingState = {
   lightColor: [1, 0.72, 0.46],
   exposure: 0.5,
   intensity: 3,
+  bulbSize: 0.55,
   relief: 0.85,
   specular: 0.22,
   shadow: 0.7,
@@ -341,6 +343,7 @@ export class DepthRelightingRenderer {
       lightZ: this.#settings.lightZ,
       exposure: this.#settings.exposure,
       intensity: this.#settings.intensity,
+      bulbSize: this.#settings.bulbSize,
       relief: this.#settings.relief,
       specular: this.#settings.specular,
       shadow: this.#settings.shadow,

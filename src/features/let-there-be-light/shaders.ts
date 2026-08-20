@@ -89,6 +89,7 @@ export const RelightParams = d.struct({
   lightZ: d.f32,
   exposure: d.f32,
   intensity: d.f32,
+  bulbSize: d.f32,
   relief: d.f32,
   specular: d.f32,
   shadow: d.f32,
@@ -333,18 +334,36 @@ function bulbRadius(): number {
   'use gpu';
   return (
     BULB_WORLD_RADIUS *
+    relightLayout.$.params.bulbSize *
     ((BULB_CAMERA_Z - BULB_REFERENCE_Z) / (BULB_CAMERA_Z - relightLayout.$.params.lightZ))
   );
+}
+
+function bulbWorldRadius(): number {
+  'use gpu';
+  return BULB_WORLD_RADIUS * relightLayout.$.params.bulbSize;
+}
+
+function bulbAspect(): number {
+  'use gpu';
+  return relightLayout.$.params.viewportSize.x / relightLayout.$.params.viewportSize.y;
+}
+
+function bulbDistance(uv: d.v2f): number {
+  'use gpu';
+  const offset = uv - relightLayout.$.params.lightPosition;
+  return std.length(d.vec2f(offset.x * bulbAspect(), offset.y));
 }
 
 function bulbExposure(radius: number): number {
   'use gpu';
   let open = d.f32(0);
+  const aspect = bulbAspect();
   for (const stepY of tgpu.unroll(RING_OFFSETS)) {
     for (const stepX of tgpu.unroll(RING_OFFSETS)) {
       const probe =
         relightLayout.$.params.lightPosition +
-        d.vec2f(stepX, stepY) * (radius * BULB_SAMPLE_SPREAD);
+        d.vec2f(d.f32(stepX) / aspect, d.f32(stepY)) * (radius * BULB_SAMPLE_SPREAD);
       open += std.smoothstep(
         d.f32(0),
         BULB_SOURCE_SOFTNESS,
@@ -358,11 +377,11 @@ function bulbExposure(radius: number): number {
 function bulbSurface(uv: d.v2f, tint: d.v3f, depth: number): d.v4f {
   'use gpu';
   const radius = bulbRadius();
-  const spread = std.length(uv - relightLayout.$.params.lightPosition) / radius;
+  const spread = bulbDistance(uv) / radius;
   const limb = std.saturate(spread);
   const dome = std.sqrt(std.max(1 - limb * limb, d.f32(0)));
   const facing = dome * dome;
-  const front = relightLayout.$.params.lightZ + BULB_WORLD_RADIUS * dome;
+  const front = relightLayout.$.params.lightZ + bulbWorldRadius() * dome;
   const solid = std.smoothstep(d.f32(0), BULB_OCCLUSION_SOFTNESS, front - surfaceZ(depth));
   const edge = std.clamp(std.fwidth(spread) * BULB_EDGE, BULB_EDGE_FLOOR, BULB_EDGE_LIMIT);
   const coverage = (1 - std.smoothstep(1 - edge, 1 + edge, spread)) * solid;
@@ -373,7 +392,7 @@ function bulbSurface(uv: d.v2f, tint: d.v3f, depth: number): d.v4f {
 function bulbGlow(uv: d.v2f, tint: d.v3f): d.v3f {
   'use gpu';
   const radius = bulbRadius();
-  const radii = std.length(uv - relightLayout.$.params.lightPosition) / radius;
+  const radii = bulbDistance(uv) / radius;
   const halo = std.exp(0 - radii / BULB_HALO_SPAN);
   const veil = std.exp(0 - radii / BULB_VEIL_SPAN);
   return tint * ((halo * BULB_HALO + veil * BULB_VEIL) * bulbExposure(radius));

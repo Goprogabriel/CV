@@ -93,6 +93,7 @@ let facing: Facing = 'front';
 
 const visualSettings = {
   intensity: defaultRelightingSettings.intensity,
+  bulbSize: defaultRelightingSettings.bulbSize,
   exposure: defaultRelightingSettings.exposure,
   relief: defaultRelightingSettings.relief,
   shadow: defaultRelightingSettings.shadow,
@@ -342,6 +343,7 @@ function hexToRgb(hex: string): [number, number, number] {
 
 const rangeSettings = [
   ['intensity', 'intensity'],
+  ['bulbSize', 'bulbSize'],
   ['ambient', 'exposure'],
   ['relief', 'relief'],
   ['shadow', 'shadow'],
@@ -417,6 +419,7 @@ settingsDialog.querySelector<HTMLButtonElement>('[data-settings-reset]')?.addEve
   () => {
     const defaults: Record<string, number> = {
       intensity: defaultRelightingSettings.intensity,
+      bulbSize: defaultRelightingSettings.bulbSize,
       ambient: defaultRelightingSettings.exposure,
       relief: defaultRelightingSettings.relief,
       shadow: defaultRelightingSettings.shadow,
