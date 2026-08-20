@@ -1,9 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { withBase } from '@/utils/paths';
 import '@/styles/let-there-be-light.css';
-
-const projectPath = withBase('/projects/');
 ---
 
 <BaseLayout
@@ -27,13 +24,7 @@ const projectPath = withBase('/projects/');
         <video data-light-video autoplay muted playsinline hidden></video>
 
         <div class="light-vignette" aria-hidden="true"></div>
-
-        <header class="light-project-card">
-          <p class="eyebrow">Interactive project · WebGPU</p>
-          <h1 aria-label="LetThereBeLight"><span aria-hidden="true">LetThereBe</span><span aria-hidden="true">Light</span></h1>
-          <p>Point with one hand to move the light through the live scene.</p>
-          <a href={projectPath}>Project directory <span aria-hidden="true">↙</span></a>
-        </header>
+        <h1 class="sr-only">LetThereBeLight</h1>
 
         <div class="light-hud" aria-label="Live project status">
           <span class="light-live"><i></i> Live camera</span>

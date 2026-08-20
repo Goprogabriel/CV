@@ -83,6 +83,7 @@ export const DepthParams = d.struct({
 
 export const RelightParams = d.struct({
   uvTransform: d.mat2x2f,
+  viewportSize: d.vec2f,
   lightColor: d.vec4f,
   lightPosition: d.vec2f,
   lightZ: d.f32,
@@ -267,8 +268,13 @@ function cameraUvAt(uv: d.v2f): d.v2f {
   if (relightLayout.$.params.mirror !== 0) {
     framed = d.vec2f(1 - uv.x, uv.y);
   }
-  const side = std.min(sourceSize.x, sourceSize.y);
-  const sourcePixel = (sourceSize - side) * 0.5 + framed * side - 0.5;
+  const viewportSize = relightLayout.$.params.viewportSize;
+  const coverScale = std.max(
+    viewportSize.x / sourceSize.x,
+    viewportSize.y / sourceSize.y,
+  );
+  const visibleSourceSize = viewportSize / coverScale;
+  const sourcePixel = (sourceSize - visibleSourceSize) * 0.5 + framed * visibleSourceSize - 0.5;
   const clamped = std.clamp(sourcePixel, d.vec2f(0), sourceSize - 1);
   const sourceUv = (clamped + 0.5) / sourceSize;
   return relightLayout.$.params.uvTransform * (sourceUv - d.vec2f(0.5)) + d.vec2f(0.5);

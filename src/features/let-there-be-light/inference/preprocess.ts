@@ -12,16 +12,18 @@ const WORKGROUP_SIZE = 64;
 const CUBIC_A = -0.75;
 const CUBIC_TAPS = [-1, 0, 1, 2] as const;
 
-/** The model always consumes a centered square crop of the source frame */
+/** The model consumes the same viewport-shaped crop shown by the renderer. */
 export interface DepthFrameOptions {
   readonly mirrorX: boolean;
   readonly uvTransform: d.m2x2f;
+  readonly viewportSize: readonly [number, number];
   /** Whether the UV transform exchanges the texture's width and height axes */
   readonly swapAxes: boolean;
 }
 
 const FrameParams = d.struct({
   uvTransform: d.mat2x2f,
+  viewportSize: d.vec2f,
   outputSize: d.vec2u,
   mirrorX: d.u32,
   swapAxes: d.u32,
@@ -79,10 +81,16 @@ const depthFramePreprocessKernel = tgpu.computeFn({
   if (params.swapAxes !== 0) {
     sourceSize = sourceSize.yx;
   }
-  const side = std.min(sourceSize.x, sourceSize.y);
-  const cropOrigin = (sourceSize - side) * 0.5;
+  const coverScale = std.max(
+    params.viewportSize.x / sourceSize.x,
+    params.viewportSize.y / sourceSize.y,
+  );
+  const visibleSourceSize = params.viewportSize / coverScale;
+  const cropOrigin = (sourceSize - visibleSourceSize) * 0.5;
   const sourcePixel =
-    cropOrigin + (outputPixel + 0.5) * (d.vec2f(side) / d.vec2f(params.outputSize)) - 0.5;
+    cropOrigin +
+    (outputPixel + 0.5) * (visibleSourceSize / d.vec2f(params.outputSize)) -
+    0.5;
   const base = std.floor(sourcePixel);
 
   let rgb = d.vec3f(0);
@@ -133,6 +141,7 @@ export class DepthFramePreprocessor {
 
     this.#params.write({
       uvTransform: options.uvTransform,
+      viewportSize: d.vec2f(...options.viewportSize),
       outputSize: d.vec2u(outputWidth, outputHeight),
       mirrorX: options.mirrorX ? 1 : 0,
       swapAxes: options.swapAxes ? 1 : 0,

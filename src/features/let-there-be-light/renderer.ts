@@ -105,6 +105,7 @@ export class DepthRelightingRenderer {
   #plan: DepthInferencePlan | undefined;
   #attachment: RelightAttachment | undefined;
   #uvTransform = d.mat2x2f.identity();
+  #viewportSize: [number, number] = [1, 1];
   #swapAxes = false;
   #firstFrame = true;
   #settings: RelightingState = defaultRelightingSettings;
@@ -224,6 +225,7 @@ export class DepthRelightingRenderer {
     }
     const updateDepth = !options?.skipDepth || this.#firstFrame;
 
+    this.#syncCanvasDisplay(frame);
     this.#syncCanvasSize();
     this.#uvTransform = frame.uvTransform;
     this.#swapAxes = frame.swapAxes;
@@ -238,6 +240,7 @@ export class DepthRelightingRenderer {
       const pass = encoder.beginComputePass();
       plan.encodeFrame(pass, externalFrame, {
         uvTransform: frame.uvTransform,
+        viewportSize: this.#viewportSize,
         mirrorX: this.#settings.mirror,
         swapAxes: frame.swapAxes,
       });
@@ -276,22 +279,63 @@ export class DepthRelightingRenderer {
     this.#context.unconfigure();
   }
 
+  #syncCanvasDisplay(frame: DepthCameraFrame): void {
+    const sourceWidth =
+      frame.source instanceof HTMLVideoElement ? frame.source.videoWidth : frame.source.displayWidth;
+    const sourceHeight =
+      frame.source instanceof HTMLVideoElement ? frame.source.videoHeight : frame.source.displayHeight;
+    const orientedWidth = frame.swapAxes ? sourceHeight : sourceWidth;
+    const orientedHeight = frame.swapAxes ? sourceWidth : sourceHeight;
+    const container = this.#canvas.parentElement;
+    const availableWidth = container?.clientWidth ?? 0;
+    const availableHeight = container?.clientHeight ?? 0;
+    if (
+      !container ||
+      orientedWidth <= 0 ||
+      orientedHeight <= 0 ||
+      availableWidth <= 0 ||
+      availableHeight <= 0
+    ) {
+      return;
+    }
+
+    const fitScale = Math.min(
+      availableWidth / orientedWidth,
+      availableHeight / orientedHeight,
+    );
+    const displayWidth = Math.max(1, Math.round(orientedWidth * fitScale));
+    const displayHeight = Math.max(1, Math.round(orientedHeight * fitScale));
+    container.style.setProperty('--camera-width', `${displayWidth}px`);
+    container.style.setProperty('--camera-height', `${displayHeight}px`);
+  }
+
   #syncCanvasSize(): void {
     const displayWidth = this.#canvas.clientWidth;
-    if (displayWidth <= 0) {
+    const displayHeight = this.#canvas.clientHeight;
+    if (displayWidth <= 0 || displayHeight <= 0) {
       return;
     }
     const ratio = Math.min(globalThis.devicePixelRatio || 1, MAX_PIXEL_RATIO);
-    const side = Math.min(MAX_CANVAS_SIDE, Math.max(1, Math.round(displayWidth * ratio)));
-    if (this.#canvas.width !== side || this.#canvas.height !== side) {
-      this.#canvas.width = side;
-      this.#canvas.height = side;
+    const requestedWidth = Math.max(1, Math.round(displayWidth * ratio));
+    const requestedHeight = Math.max(1, Math.round(displayHeight * ratio));
+    const limitScale = Math.min(
+      1,
+      MAX_CANVAS_SIDE / Math.max(requestedWidth, requestedHeight),
+    );
+    const width = Math.max(1, Math.round(requestedWidth * limitScale));
+    const height = Math.max(1, Math.round(requestedHeight * limitScale));
+    if (this.#canvas.width !== width || this.#canvas.height !== height) {
+      this.#canvas.width = width;
+      this.#canvas.height = height;
+      this.#firstFrame = true;
     }
+    this.#viewportSize = [width, height];
   }
 
   #writeRelightParams(): void {
     this.#relightParams.write({
       uvTransform: this.#uvTransform,
+      viewportSize: d.vec2f(...this.#viewportSize),
       lightColor: d.vec4f(...this.#settings.lightColor, 1),
       lightPosition: d.vec2f(...this.#settings.lightPosition),
       lightZ: this.#settings.lightZ,

@@ -24,6 +24,8 @@ interface Point {
 interface PendingFrame {
   readonly width: number;
   readonly height: number;
+  readonly viewportWidth: number;
+  readonly viewportHeight: number;
   readonly mirrored: boolean;
 }
 
@@ -77,20 +79,22 @@ function distance(first: Point, second: Point): number {
   return Math.hypot(first.x - second.x, first.y - second.y);
 }
 
-function canvasPoint(
-  point: Point,
-  frame: PendingFrame,
-): Point {
-  const side = Math.min(frame.width, frame.height);
-  const cropX = (frame.width - side) * 0.5;
-  const cropY = (frame.height - side) * 0.5;
-  let x = (point.x * frame.width - cropX) / side;
+function canvasPoint(point: Point, frame: PendingFrame): Point {
+  const coverScale = Math.max(
+    frame.viewportWidth / frame.width,
+    frame.viewportHeight / frame.height,
+  );
+  const visibleWidth = frame.viewportWidth / coverScale;
+  const visibleHeight = frame.viewportHeight / coverScale;
+  const cropX = (frame.width - visibleWidth) * 0.5;
+  const cropY = (frame.height - visibleHeight) * 0.5;
+  let x = (point.x * frame.width - cropX) / visibleWidth;
   if (frame.mirrored) {
     x = 1 - x;
   }
   return {
     x,
-    y: (point.y * frame.height - cropY) / side,
+    y: (point.y * frame.height - cropY) / visibleHeight,
     z: point.z,
     visibility: point.visibility,
   };
@@ -129,10 +133,15 @@ export function setupHandTracking(
   }
 
   function syncOverlaySize(): void {
-    const size = Math.min(1024, Math.max(1, Math.round(overlay.clientWidth * Math.min(2, devicePixelRatio || 1))));
-    if (overlay.width !== size || overlay.height !== size) {
-      overlay.width = size;
-      overlay.height = size;
+    const ratio = Math.min(2, devicePixelRatio || 1);
+    const requestedWidth = Math.max(1, Math.round(overlay.clientWidth * ratio));
+    const requestedHeight = Math.max(1, Math.round(overlay.clientHeight * ratio));
+    const limitScale = Math.min(1, 1024 / Math.max(requestedWidth, requestedHeight));
+    const width = Math.max(1, Math.round(requestedWidth * limitScale));
+    const height = Math.max(1, Math.round(requestedHeight * limitScale));
+    if (overlay.width !== width || overlay.height !== height) {
+      overlay.width = width;
+      overlay.height = height;
     }
   }
 
@@ -141,14 +150,15 @@ export function setupHandTracking(
       return;
     }
     syncOverlaySize();
+    const drawingUnit = Math.min(overlay.width, overlay.height);
     context.clearRect(0, 0, overlay.width, overlay.height);
     context.save();
     context.lineCap = 'round';
     context.lineJoin = 'round';
     context.strokeStyle = 'rgba(243, 240, 232, .88)';
-    context.lineWidth = Math.max(2, overlay.width * 0.0028);
+    context.lineWidth = Math.max(2, drawingUnit * 0.0028);
     context.shadowColor = 'rgba(4, 21, 18, .8)';
-    context.shadowBlur = overlay.width * 0.012;
+    context.shadowBlur = drawingUnit * 0.012;
 
     for (const [fromIndex, toIndex] of HAND_CONNECTIONS) {
       const from = points[fromIndex];
@@ -169,7 +179,7 @@ export function setupHandTracking(
       context.arc(
         point.x * overlay.width,
         point.y * overlay.height,
-        overlay.width * (isTip ? 0.007 : 0.0034),
+        drawingUnit * (isTip ? 0.007 : 0.0034),
         0,
         Math.PI * 2,
       );
@@ -183,12 +193,12 @@ export function setupHandTracking(
       context.arc(
         fingertip.x * overlay.width,
         fingertip.y * overlay.height,
-        overlay.width * 0.021,
+        drawingUnit * 0.021,
         0,
         Math.PI * 2,
       );
       context.strokeStyle = 'rgba(217, 105, 73, .8)';
-      context.lineWidth = Math.max(1, overlay.width * 0.0015);
+      context.lineWidth = Math.max(1, drawingUnit * 0.0015);
       context.stroke();
     }
     context.restore();
@@ -353,7 +363,13 @@ export function setupHandTracking(
           pending = false;
           return;
         }
-        pendingFrame = { width: bitmap.width, height: bitmap.height, mirrored };
+        pendingFrame = {
+          width: bitmap.width,
+          height: bitmap.height,
+          viewportWidth: Math.max(1, overlay.clientWidth),
+          viewportHeight: Math.max(1, overlay.clientHeight),
+          mirrored,
+        };
         worker.postMessage({ type: 'frame', bitmap, timestamp: Math.round(timestamp) }, [bitmap]);
       })
       .catch(() => {
