@@ -48,15 +48,21 @@ const DITHER_STEP = 1 / 255;
 const BULB_WORLD_RADIUS = 0.05;
 const BULB_CAMERA_Z = 2;
 const BULB_REFERENCE_Z = 0.42;
-const BULB_CORE = 8;
+const BULB_CORE = 9.5;
 const BULB_LIMB = 0.28;
 const BULB_EDGE = 0.75;
 const BULB_EDGE_FLOOR = 0.004;
 const BULB_EDGE_LIMIT = 0.3;
-const BULB_HALO = 1.6;
-const BULB_HALO_SPAN = 1.2;
-const BULB_VEIL = 0.12;
-const BULB_VEIL_SPAN = 4;
+const BULB_INNER_GLOW = 2.4;
+const BULB_INNER_SPAN = 0.82;
+const BULB_CORONA = 1.35;
+const BULB_CORONA_SPAN = 0.32;
+const BULB_HALO = 0.85;
+const BULB_HALO_SPAN = 1.7;
+const BULB_VEIL = 0.07;
+const BULB_VEIL_SPAN = 4.8;
+const BULB_GLOW_FADE_START = 4.5;
+const BULB_GLOW_FADE_END = 7;
 const BULB_ONSET = 0.6;
 const BULB_OCCLUSION_SOFTNESS = 0.02;
 const BULB_SOURCE_SOFTNESS = 0.08;
@@ -393,9 +399,16 @@ function bulbGlow(uv: d.v2f, tint: d.v3f): d.v3f {
   'use gpu';
   const radius = bulbRadius();
   const radii = bulbDistance(uv) / radius;
+  const inner = std.exp(0 - (radii * radii) / (BULB_INNER_SPAN * BULB_INNER_SPAN));
+  const corona = std.exp(0 - std.abs(radii - 1) / BULB_CORONA_SPAN);
   const halo = std.exp(0 - radii / BULB_HALO_SPAN);
   const veil = std.exp(0 - radii / BULB_VEIL_SPAN);
-  return tint * ((halo * BULB_HALO + veil * BULB_VEIL) * bulbExposure(radius));
+  const fade = 1 - std.smoothstep(BULB_GLOW_FADE_START, BULB_GLOW_FADE_END, radii);
+  const hotTint = std.mix(tint, d.vec3f(1), d.f32(0.58));
+  const softTint = std.mix(tint, d.vec3f(1), d.f32(0.12));
+  const hotGlow = inner * BULB_INNER_GLOW + corona * BULB_CORONA;
+  const softGlow = halo * BULB_HALO + veil * BULB_VEIL;
+  return (hotTint * hotGlow + softTint * softGlow) * (bulbExposure(radius) * fade);
 }
 
 function bulbPresence(): number {

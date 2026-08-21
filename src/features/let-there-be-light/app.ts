@@ -174,7 +174,7 @@ const handTracking = setupHandTracking(
         stage.dataset.lightGrabbed = 'false';
       }
       if (state === 'searching') {
-        gestureHint.textContent = 'Show a hand · pinch thumb and index finger to catch the light';
+        gestureHint.textContent = 'Pinch directly on the light and hold briefly to catch';
       } else if (state === 'off' || state === 'error') {
         gestureHint.textContent = 'Drag the light with touch or mouse';
       }
@@ -207,7 +207,7 @@ const handTracking = setupHandTracking(
         gestureHint.textContent = 'Light thrown · catch it with a pinch from either hand';
         light.releaseTrackedLight(velocity, depthVelocity);
       } else {
-        gestureHint.textContent = 'Pinch with either hand to catch, move and throw the light';
+        gestureHint.textContent = 'Pinch directly on the light and hold briefly to catch';
       }
       handWasGrabbed = grabbed;
     },
@@ -225,6 +225,7 @@ const camera = new DepthCameraSession(
         return;
       }
       try {
+        handTracking.setLightState(light.lightPosition, light.lightZ);
         handTracking.sampleFrame(performance.now(), facing === 'front');
         light.orbitTick();
         renderer.render(frame);

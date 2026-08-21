@@ -5,8 +5,14 @@ const SAMPLE_INTERVAL = 1000 / 20;
 const POSITION_SMOOTHING = 0.48;
 const DEPTH_SMOOTHING = 0.28;
 const DEPTH_RESPONSE = 1.8;
-const PINCH_GRAB_RATIO = 0.42;
-const PINCH_RELEASE_RATIO = 0.68;
+const PINCH_GRAB_RATIO = 0.36;
+const PINCH_RELEASE_RATIO = 0.64;
+const CATCH_RADIUS = 0.11;
+const CATCH_CONFIRM_FRAMES = 3;
+const CATCH_CONFIRM_TIME = 110;
+const CANDIDATE_WRIST_TOLERANCE = 0.14;
+const CANDIDATE_POINT_TOLERANCE = 0.09;
+const MIN_PALM_SCALE = 0.035;
 const LOST_HAND_RELEASE_FRAMES = 4;
 const VELOCITY_SMOOTHING = 0.42;
 const MAX_THROW_VELOCITY = 1.8;
@@ -80,6 +86,7 @@ export interface HandTrackingController {
   readonly enabled: boolean;
   init(): Promise<void>;
   setEnabled(enabled: boolean): void;
+  setLightState(position: readonly [number, number], depth: number): void;
   sampleFrame(timestamp: number, mirrored: boolean): void;
   reset(): void;
   destroy(): void;
@@ -95,6 +102,11 @@ function mix(from: number, to: number, amount: number): number {
 
 function distance(first: Point, second: Point): number {
   return Math.hypot(first.x - second.x, first.y - second.y);
+}
+
+function screenDistance(first: Point, second: Point, frame: PendingFrame): number {
+  const aspect = frame.viewportWidth / Math.max(1, frame.viewportHeight);
+  return Math.hypot((first.x - second.x) * aspect, first.y - second.y);
 }
 
 function canvasPoint(point: Point, frame: PendingFrame): Point {
@@ -152,6 +164,11 @@ export function setupHandTracking(
   let throwVelocity: [number, number] = [0, 0];
   let throwDepthVelocity = 0;
   let previousGrabSample: GrabSample | undefined;
+  let catchTarget: [number, number] = [...defaultRelightingSettings.lightPosition];
+  let candidateWrist: Point | undefined;
+  let candidatePoint: Point | undefined;
+  let candidateFrames = 0;
+  let candidateStartedAt = 0;
 
   function clearOverlay(): void {
     context?.clearRect(0, 0, overlay.width, overlay.height);
@@ -170,7 +187,11 @@ export function setupHandTracking(
     }
   }
 
-  function drawHands(hands: readonly TrackedHand[], activeIndex: number): void {
+  function drawHands(
+    hands: readonly TrackedHand[],
+    activeIndex: number,
+    catchConfirmation: number,
+  ): void {
     if (!context) {
       return;
     }
@@ -218,6 +239,23 @@ export function setupHandTracking(
         context.shadowColor = grabbed ? 'rgba(255, 184, 117, .95)' : 'rgba(217, 105, 73, .45)';
         context.shadowBlur = drawingUnit * (grabbed ? 0.035 : 0.014);
         context.stroke();
+
+        if (!grabbed && catchConfirmation > 0) {
+          context.beginPath();
+          context.arc(
+            hand.pinchPoint.x * overlay.width,
+            hand.pinchPoint.y * overlay.height,
+            ringRadius + drawingUnit * 0.008,
+            -Math.PI * 0.5,
+            -Math.PI * 0.5 + Math.PI * 2 * catchConfirmation,
+          );
+          context.setLineDash([]);
+          context.strokeStyle = '#fff4df';
+          context.lineWidth = Math.max(2, drawingUnit * 0.003);
+          context.shadowColor = 'rgba(255, 184, 117, .9)';
+          context.shadowBlur = drawingUnit * 0.026;
+          context.stroke();
+        }
       }
       context.restore();
     });
@@ -266,11 +304,19 @@ export function setupHandTracking(
     });
   }
 
+  function resetCatchCandidate(): void {
+    candidateWrist = undefined;
+    candidatePoint = undefined;
+    candidateFrames = 0;
+    candidateStartedAt = 0;
+  }
+
   function releaseLight(): void {
     grabbed = false;
     activeWrist = undefined;
     grabReferencePalmScale = undefined;
     previousGrabSample = undefined;
+    resetCatchCandidate();
   }
 
   function processHands(
@@ -312,10 +358,18 @@ export function setupHandTracking(
         }
       });
     } else {
-      let smallestPinch = firstHand.pinchRatio;
+      const targetPoint: Point = { x: catchTarget[0], y: catchTarget[1] };
+      let activeIsPinching = firstHand.pinchRatio <= PINCH_RELEASE_RATIO;
+      let closestDistance = screenDistance(firstHand.pinchPoint, targetPoint, frame);
       hands.forEach((hand, index) => {
-        if (hand.pinchRatio < smallestPinch) {
-          smallestPinch = hand.pinchRatio;
+        const handIsPinching = hand.pinchRatio <= PINCH_RELEASE_RATIO;
+        const catchDistance = screenDistance(hand.pinchPoint, targetPoint, frame);
+        if (
+          (handIsPinching && !activeIsPinching) ||
+          (handIsPinching === activeIsPinching && catchDistance < closestDistance)
+        ) {
+          activeIsPinching = handIsPinching;
+          closestDistance = catchDistance;
           activeIndex = index;
         }
       });
@@ -326,23 +380,71 @@ export function setupHandTracking(
       return;
     }
 
-    if (!grabbed && activeHand.pinchRatio <= PINCH_GRAB_RATIO) {
-      grabbed = true;
-      activeWrist = activeHand.wrist;
-      grabReferencePalmScale = activeHand.palmScale;
-      grabReferenceDepth = smoothedDepth;
-      throwVelocity = [0, 0];
-      throwDepthVelocity = 0;
-      smoothedPosition = [
-        clamp(activeHand.pinchPoint.x, 0, 1),
-        clamp(activeHand.pinchPoint.y, 0, 1),
-      ];
-      previousGrabSample = {
-        timestamp: frame.timestamp,
-        position: smoothedPosition,
-        depth: smoothedDepth,
-      };
-    } else if (grabbed && activeHand.pinchRatio >= PINCH_RELEASE_RATIO) {
+    let catchConfirmation = 0;
+    let trackingMessage = 'Pinch close to the light to catch it';
+    if (!grabbed) {
+      const targetPoint: Point = { x: catchTarget[0], y: catchTarget[1] };
+      const catchDistance = screenDistance(activeHand.pinchPoint, targetPoint, frame);
+      const pinchVisible =
+        activeHand.pinchPoint.x >= 0 &&
+        activeHand.pinchPoint.x <= 1 &&
+        activeHand.pinchPoint.y >= 0 &&
+        activeHand.pinchPoint.y <= 1;
+      const deliberateCatch =
+        activeHand.pinchRatio <= PINCH_GRAB_RATIO &&
+        activeHand.palmScale >= MIN_PALM_SCALE &&
+        pinchVisible &&
+        catchDistance <= CATCH_RADIUS;
+
+      if (deliberateCatch) {
+        const sameCandidate =
+          candidateWrist !== undefined &&
+          candidatePoint !== undefined &&
+          distance(activeHand.wrist, candidateWrist) <= CANDIDATE_WRIST_TOLERANCE &&
+          screenDistance(activeHand.pinchPoint, candidatePoint, frame) <= CANDIDATE_POINT_TOLERANCE;
+        if (sameCandidate) {
+          candidateFrames += 1;
+        } else {
+          candidateFrames = 1;
+          candidateStartedAt = frame.timestamp;
+        }
+        candidateWrist = activeHand.wrist;
+        candidatePoint = activeHand.pinchPoint;
+        const heldFor = frame.timestamp - candidateStartedAt;
+        catchConfirmation = Math.min(
+          1,
+          candidateFrames / CATCH_CONFIRM_FRAMES,
+          heldFor / CATCH_CONFIRM_TIME,
+        );
+        trackingMessage = 'Hold the pinch · confirming catch';
+
+        if (candidateFrames >= CATCH_CONFIRM_FRAMES && heldFor >= CATCH_CONFIRM_TIME) {
+          grabbed = true;
+          activeWrist = activeHand.wrist;
+          grabReferencePalmScale = activeHand.palmScale;
+          grabReferenceDepth = smoothedDepth;
+          throwVelocity = [0, 0];
+          throwDepthVelocity = 0;
+          smoothedPosition = [
+            clamp(activeHand.pinchPoint.x, 0, 1),
+            clamp(activeHand.pinchPoint.y, 0, 1),
+          ];
+          previousGrabSample = {
+            timestamp: frame.timestamp,
+            position: smoothedPosition,
+            depth: smoothedDepth,
+          };
+          resetCatchCandidate();
+        }
+      } else {
+        resetCatchCandidate();
+        if (activeHand.palmScale < MIN_PALM_SCALE) {
+          trackingMessage = 'Move your hand closer to catch';
+        } else if (activeHand.pinchRatio <= PINCH_GRAB_RATIO) {
+          trackingMessage = 'Move the pinch onto the light';
+        }
+      }
+    } else if (activeHand.pinchRatio >= PINCH_RELEASE_RATIO) {
       releaseLight();
     }
 
@@ -402,8 +504,8 @@ export function setupHandTracking(
       };
     }
 
-    drawHands(hands, activeIndex);
-    callbacks.onState('tracking', grabbed ? 'Light grabbed · release to throw' : 'Pinch to catch the light');
+    drawHands(hands, activeIndex, catchConfirmation);
+    callbacks.onState('tracking', grabbed ? 'Light grabbed · release to throw' : trackingMessage);
     emitUpdate();
   }
 
@@ -503,6 +605,13 @@ export function setupHandTracking(
     callbacks.onState('searching', 'Show a hand · pinch to catch');
   }
 
+  function setLightState(position: readonly [number, number], depth: number): void {
+    catchTarget = [clamp(position[0], 0, 1), clamp(position[1], 0, 1)];
+    if (!grabbed) {
+      smoothedDepth = clamp(depth, LIGHT_Z_MIN, LIGHT_Z_MAX);
+    }
+  }
+
   function sampleFrame(timestamp: number, mirrored: boolean): void {
     if (
       disposed ||
@@ -557,6 +666,7 @@ export function setupHandTracking(
     },
     init,
     setEnabled,
+    setLightState,
     sampleFrame,
     reset,
     destroy,
