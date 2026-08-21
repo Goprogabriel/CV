@@ -2,18 +2,19 @@ import type { NormalizedLandmark } from '@mediapipe/tasks-vision';
 import { LIGHT_Z_MAX, LIGHT_Z_MIN, defaultRelightingSettings } from './renderer.ts';
 
 const SAMPLE_INTERVAL = 1000 / 20;
-const POSITION_SMOOTHING = 0.48;
+const POSITION_SMOOTHING = 0.56;
 const DEPTH_SMOOTHING = 0.28;
 const DEPTH_RESPONSE = 1.8;
-const PINCH_GRAB_RATIO = 0.36;
-const PINCH_RELEASE_RATIO = 0.64;
-const CATCH_RADIUS = 0.11;
+const PINCH_GRAB_RATIO = 0.44;
+const PINCH_RELEASE_RATIO = 0.82;
+const PINCH_RELEASE_FRAMES = 2;
+const CATCH_RADIUS = 0.15;
 const CATCH_CONFIRM_FRAMES = 3;
 const CATCH_CONFIRM_TIME = 110;
-const CANDIDATE_WRIST_TOLERANCE = 0.14;
-const CANDIDATE_POINT_TOLERANCE = 0.09;
+const CANDIDATE_WRIST_TOLERANCE = 0.18;
+const CANDIDATE_POINT_TOLERANCE = 0.14;
 const MIN_PALM_SCALE = 0.035;
-const LOST_HAND_RELEASE_FRAMES = 4;
+const LOST_HAND_RELEASE_FRAMES = 6;
 const VELOCITY_SMOOTHING = 0.42;
 const MAX_THROW_VELOCITY = 1.8;
 const MAX_DEPTH_VELOCITY = 2.2;
@@ -169,6 +170,7 @@ export function setupHandTracking(
   let candidatePoint: Point | undefined;
   let candidateFrames = 0;
   let candidateStartedAt = 0;
+  let releaseCandidateFrames = 0;
 
   function clearOverlay(): void {
     context?.clearRect(0, 0, overlay.width, overlay.height);
@@ -316,6 +318,7 @@ export function setupHandTracking(
     activeWrist = undefined;
     grabReferencePalmScale = undefined;
     previousGrabSample = undefined;
+    releaseCandidateFrames = 0;
     resetCatchCandidate();
   }
 
@@ -331,6 +334,7 @@ export function setupHandTracking(
       lostHandFrames += 1;
       clearOverlay();
       if (grabbed && lostHandFrames <= LOST_HAND_RELEASE_FRAMES) {
+        releaseCandidateFrames = 0;
         callbacks.onState('tracking', 'Keep the pinch in view');
         return;
       }
@@ -420,6 +424,7 @@ export function setupHandTracking(
 
         if (candidateFrames >= CATCH_CONFIRM_FRAMES && heldFor >= CATCH_CONFIRM_TIME) {
           grabbed = true;
+          releaseCandidateFrames = 0;
           activeWrist = activeHand.wrist;
           grabReferencePalmScale = activeHand.palmScale;
           grabReferenceDepth = smoothedDepth;
@@ -445,7 +450,12 @@ export function setupHandTracking(
         }
       }
     } else if (activeHand.pinchRatio >= PINCH_RELEASE_RATIO) {
-      releaseLight();
+      releaseCandidateFrames += 1;
+      if (releaseCandidateFrames >= PINCH_RELEASE_FRAMES) {
+        releaseLight();
+      }
+    } else {
+      releaseCandidateFrames = 0;
     }
 
     if (grabbed) {

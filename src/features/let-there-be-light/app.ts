@@ -174,7 +174,7 @@ const handTracking = setupHandTracking(
         stage.dataset.lightGrabbed = 'false';
       }
       if (state === 'searching') {
-        gestureHint.textContent = 'Pinch directly on the light and hold briefly to catch';
+        gestureHint.textContent = 'Pinch near the light and hold briefly to catch';
       } else if (state === 'off' || state === 'error') {
         gestureHint.textContent = 'Drag the light with touch or mouse';
       }
@@ -207,7 +207,7 @@ const handTracking = setupHandTracking(
         gestureHint.textContent = 'Light thrown · catch it with a pinch from either hand';
         light.releaseTrackedLight(velocity, depthVelocity);
       } else {
-        gestureHint.textContent = 'Pinch directly on the light and hold briefly to catch';
+        gestureHint.textContent = 'Pinch near the light and hold briefly to catch';
       }
       handWasGrabbed = grabbed;
     },

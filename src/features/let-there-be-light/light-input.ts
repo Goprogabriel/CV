@@ -13,6 +13,8 @@ const MOTION_DRAG = 2.6;
 const DEPTH_DRAG = 3.1;
 const THROW_SCALE = 0.82;
 const BOUNCE_DAMPING = 0.46;
+const TRACK_POSITION_RESPONSE = 20;
+const TRACK_DEPTH_RESPONSE = 13;
 const MOTION_X_BOUNDS = [0.035, 0.965] as const;
 const MOTION_Y_BOUNDS = [0.055, 0.945] as const;
 
@@ -64,10 +66,14 @@ export function setupLightInput(
   let velocity: [number, number] = [0, 0];
   let depthVelocity = 0;
   let floating = false;
+  let trackingHeld = false;
+  let trackedTargetPosition: [number, number] = [...defaultRelightingSettings.lightPosition];
+  let trackedTargetDepth = defaultRelightingSettings.lightZ;
   let lastMotionTime = performance.now();
   let floatStartTime = lastMotionTime;
 
   function stopMotion(): void {
+    trackingHeld = false;
     physicalPosition = [...lightPosition];
     velocity = [0, 0];
     depthVelocity = 0;
@@ -76,6 +82,7 @@ export function setupLightInput(
   }
 
   function placeLight(x: number, y: number): void {
+    trackingHeld = false;
     lightPosition = [clamp(x, 0, 1), clamp(y, 0, 1)];
     physicalPosition = [...lightPosition];
     velocity = [0, 0];
@@ -240,6 +247,18 @@ export function setupLightInput(
       const now = performance.now();
       const elapsed = clamp((now - lastMotionTime) / 1000, 0, 0.05);
       lastMotionTime = now;
+      if (trackingHeld) {
+        const positionAmount = 1 - Math.exp(-TRACK_POSITION_RESPONSE * elapsed);
+        const depthAmount = 1 - Math.exp(-TRACK_DEPTH_RESPONSE * elapsed);
+        physicalPosition = [
+          physicalPosition[0] + (trackedTargetPosition[0] - physicalPosition[0]) * positionAmount,
+          physicalPosition[1] + (trackedTargetPosition[1] - physicalPosition[1]) * positionAmount,
+        ];
+        lightPosition = [...physicalPosition];
+        lightZ += (trackedTargetDepth - lightZ) * depthAmount;
+        onChange({ lightPosition, lightZ });
+        return;
+      }
       if (floating) {
         physicalPosition = [
           physicalPosition[0] + velocity[0] * elapsed,
@@ -287,14 +306,17 @@ export function setupLightInput(
       floating = false;
       velocity = [0, 0];
       depthVelocity = 0;
-      lastMotionTime = performance.now();
-      physicalPosition = [clamp(position[0], 0, 1), clamp(position[1], 0, 1)];
-      lightPosition = [...physicalPosition];
-      lightZ = clamp(depth, LIGHT_Z_MIN, LIGHT_Z_MAX);
-      onChange({ lightPosition, lightZ });
+      trackedTargetPosition = [clamp(position[0], 0, 1), clamp(position[1], 0, 1)];
+      trackedTargetDepth = clamp(depth, LIGHT_Z_MIN, LIGHT_Z_MAX);
+      if (!trackingHeld) {
+        trackingHeld = true;
+        physicalPosition = [...lightPosition];
+        lastMotionTime = performance.now();
+      }
     },
     releaseTrackedLight(nextVelocity, nextDepthVelocity) {
       control = LightControl.PINNED;
+      trackingHeld = false;
       physicalPosition = [...lightPosition];
       velocity = [
         clamp(nextVelocity[0] * THROW_SCALE, -1.5, 1.5),
