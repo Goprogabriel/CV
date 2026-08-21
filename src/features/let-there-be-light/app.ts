@@ -14,7 +14,12 @@ import {
   modelVariant,
   setCachingEnabled,
 } from './model-store.ts';
-import { DepthRelightingRenderer, defaultRelightingSettings } from './renderer.ts';
+import {
+  LIGHT_Z_MAX,
+  LIGHT_Z_MIN,
+  DepthRelightingRenderer,
+  defaultRelightingSettings,
+} from './renderer.ts';
 
 const MODEL_SIZE = 'large' as const;
 const CAMERA_FRAME_RATE = 60;
@@ -79,6 +84,10 @@ const depthMeter = requiredElement(
   app.querySelector<HTMLElement>('[data-depth-meter]'),
   'the light depth meter',
 );
+const gestureHint = requiredElement(
+  app.querySelector<HTMLElement>('[data-gesture-hint]'),
+  'the gesture hint',
+);
 
 const listenerController = new AbortController();
 const { signal } = listenerController;
@@ -90,6 +99,7 @@ let booting = false;
 let disposed = false;
 let deviceLost = false;
 let facing: Facing = 'front';
+let handWasGrabbed = false;
 
 const visualSettings = {
   intensity: defaultRelightingSettings.intensity,
@@ -133,7 +143,15 @@ function applyVisualSettings(): void {
 
 const light = setupLightInput(
   canvas,
-  (update) => renderer?.update(update),
+  (update) => {
+    renderer?.update(update);
+    if (update.lightZ !== undefined) {
+      depthMeter.style.setProperty(
+        '--light-depth',
+        String((update.lightZ - LIGHT_Z_MIN) / (LIGHT_Z_MAX - LIGHT_Z_MIN)),
+      );
+    }
+  },
   signal,
 );
 
@@ -145,11 +163,53 @@ const handTracking = setupHandTracking(
       handStatus.dataset.state = state;
       handStatusText.textContent = message;
       light.setHandTrackingActive(state !== 'off' && state !== 'error');
+      if (state !== 'tracking') {
+        if ((state === 'off' || state === 'error') && handWasGrabbed) {
+          light.releaseTrackedLight([0, 0], 0);
+          handWasGrabbed = false;
+          handStatus.dataset.floating = 'true';
+          stage.dataset.lightFloating = 'true';
+        }
+        handStatus.dataset.grabbed = 'false';
+        stage.dataset.lightGrabbed = 'false';
+      }
+      if (state === 'searching') {
+        gestureHint.textContent = 'Show a hand · pinch thumb and index finger to catch the light';
+      } else if (state === 'off' || state === 'error') {
+        gestureHint.textContent = 'Drag the light with touch or mouse';
+      }
     },
-    onUpdate: ({ position, lightZ, depthProgress }) => {
-      stage.dataset.handSeen = 'true';
+    onUpdate: ({
+      position,
+      lightZ,
+      depthProgress,
+      grabbed,
+      handPresent,
+      velocity,
+      depthVelocity,
+    }) => {
+      const justReleased = handWasGrabbed && !grabbed;
+      if (handPresent) {
+        stage.dataset.handSeen = 'true';
+      }
+      handStatus.dataset.grabbed = String(grabbed);
+      stage.dataset.lightGrabbed = String(grabbed);
       depthMeter.style.setProperty('--light-depth', String(depthProgress));
-      light.setTrackedLight(position, lightZ);
+      if (grabbed) {
+        handStatus.dataset.floating = 'false';
+        stage.dataset.lightFloating = 'false';
+        gestureHint.textContent = 'Light grabbed · move, then release quickly to throw';
+        light.setTrackedLight(position, lightZ);
+      } else if (justReleased) {
+        handStatusText.textContent = 'Light floating · pinch to catch';
+        handStatus.dataset.floating = 'true';
+        stage.dataset.lightFloating = 'true';
+        gestureHint.textContent = 'Light thrown · catch it with a pinch from either hand';
+        light.releaseTrackedLight(velocity, depthVelocity);
+      } else {
+        gestureHint.textContent = 'Pinch with either hand to catch, move and throw the light';
+      }
+      handWasGrabbed = grabbed;
     },
   },
   signal,

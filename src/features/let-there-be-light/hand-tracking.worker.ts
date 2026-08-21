@@ -43,7 +43,7 @@ async function initialize(message: InitMessage): Promise<void> {
       delegate: 'CPU',
     },
     runningMode: 'VIDEO',
-    numHands: 1,
+    numHands: 2,
     minHandDetectionConfidence: 0.55,
     minHandPresenceConfidence: 0.52,
     minTrackingConfidence: 0.5,

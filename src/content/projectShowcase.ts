@@ -21,9 +21,9 @@ export const showcaseProjects: ShowcaseProject[] = [
     category: 'Interactive WebGPU',
     status: 'Live experiment',
     summary:
-      'Move a virtual light through live camera depth with your hand — left, right, up, down, closer or farther.',
+      'Catch, move and throw a floating virtual light between your hands inside a live, depth-aware camera scene.',
     contribution:
-      'Turned the original TypeGPU demo into a full-screen browser experience with automatic DepthART loading, MediaPipe hand tracking, 3D light movement and touch or mouse fallback.',
+      'Turned the original TypeGPU demo into a full-screen browser experience with automatic DepthART loading, two-hand MediaPipe tracking, gesture velocity, floating light physics and touch or mouse fallback.',
     technologies: ['TypeGPU', 'WebGPU', 'MediaPipe', 'DepthART', 'TypeScript'],
     image: '/media/projects/let-there-be-light.jpg',
     imageAlt: 'A dark green interior transformed by one warm, depth-aware light source',

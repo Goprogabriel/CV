@@ -7,6 +7,14 @@ const WHEEL_SENSITIVITY = 0.0015;
 const PINCH_SENSITIVITY = 0.004;
 const LIGHT_GRAB_RADIUS = 0.08;
 const TAP_SLOP = 0.012;
+const FLOAT_AMPLITUDE = 0.008;
+const FLOAT_SPEED = 0.0024;
+const MOTION_DRAG = 2.6;
+const DEPTH_DRAG = 3.1;
+const THROW_SCALE = 0.82;
+const BOUNCE_DAMPING = 0.46;
+const MOTION_X_BOUNDS = [0.035, 0.965] as const;
+const MOTION_Y_BOUNDS = [0.055, 0.945] as const;
 
 const LightControl = {
   ORBIT: 'orbit',
@@ -29,9 +37,10 @@ interface LightUpdate {
 interface LightInput {
   readonly lightPosition: [number, number];
   readonly lightZ: number;
-  /** Advances the idle orbit; call once per rendered frame */
+  /** Advances idle orbit, throw inertia and floating motion once per rendered frame. */
   orbitTick(): void;
   setTrackedLight(position: [number, number], depth: number): void;
+  releaseTrackedLight(velocity: [number, number], depthVelocity: number): void;
   setHandTrackingActive(active: boolean): void;
 }
 
@@ -50,10 +59,29 @@ export function setupLightInput(
   let control: LightControl = LightControl.ORBIT;
   let handTrackingActive = false;
   let lightPosition: [number, number] = [...defaultRelightingSettings.lightPosition];
+  let physicalPosition: [number, number] = [...defaultRelightingSettings.lightPosition];
   let lightZ = defaultRelightingSettings.lightZ;
+  let velocity: [number, number] = [0, 0];
+  let depthVelocity = 0;
+  let floating = false;
+  let lastMotionTime = performance.now();
+  let floatStartTime = lastMotionTime;
+
+  function stopMotion(): void {
+    physicalPosition = [...lightPosition];
+    velocity = [0, 0];
+    depthVelocity = 0;
+    floating = false;
+    lastMotionTime = performance.now();
+  }
 
   function placeLight(x: number, y: number): void {
     lightPosition = [clamp(x, 0, 1), clamp(y, 0, 1)];
+    physicalPosition = [...lightPosition];
+    velocity = [0, 0];
+    depthVelocity = 0;
+    floating = false;
+    lastMotionTime = performance.now();
     onChange({ lightPosition });
   }
 
@@ -103,6 +131,9 @@ export function setupLightInput(
     }
     const grabbed = overLight(point);
     gesture = { kind: 'press', grabbed, x: point.x, y: point.y };
+    if (grabbed) {
+      stopMotion();
+    }
     if (!grabbed && event.pointerType !== 'touch') {
       placeLight(point.x, point.y);
       pinLight(true);
@@ -206,10 +237,45 @@ export function setupLightInput(
       return lightZ;
     },
     orbitTick() {
+      const now = performance.now();
+      const elapsed = clamp((now - lastMotionTime) / 1000, 0, 0.05);
+      lastMotionTime = now;
+      if (floating) {
+        physicalPosition = [
+          physicalPosition[0] + velocity[0] * elapsed,
+          physicalPosition[1] + velocity[1] * elapsed,
+        ];
+        lightZ += depthVelocity * elapsed;
+
+        if (physicalPosition[0] < MOTION_X_BOUNDS[0] || physicalPosition[0] > MOTION_X_BOUNDS[1]) {
+          physicalPosition[0] = clamp(physicalPosition[0], ...MOTION_X_BOUNDS);
+          velocity[0] *= -BOUNCE_DAMPING;
+        }
+        if (physicalPosition[1] < MOTION_Y_BOUNDS[0] || physicalPosition[1] > MOTION_Y_BOUNDS[1]) {
+          physicalPosition[1] = clamp(physicalPosition[1], ...MOTION_Y_BOUNDS);
+          velocity[1] *= -BOUNCE_DAMPING;
+        }
+        if (lightZ < LIGHT_Z_MIN || lightZ > LIGHT_Z_MAX) {
+          lightZ = clamp(lightZ, LIGHT_Z_MIN, LIGHT_Z_MAX);
+          depthVelocity *= -BOUNCE_DAMPING;
+        }
+
+        const motionDecay = Math.exp(-MOTION_DRAG * elapsed);
+        const depthDecay = Math.exp(-DEPTH_DRAG * elapsed);
+        velocity = [velocity[0] * motionDecay, velocity[1] * motionDecay];
+        depthVelocity *= depthDecay;
+        const bob = Math.sin((now - floatStartTime) * FLOAT_SPEED) * FLOAT_AMPLITUDE;
+        lightPosition = [
+          physicalPosition[0],
+          clamp(physicalPosition[1] + bob, ...MOTION_Y_BOUNDS),
+        ];
+        onChange({ lightPosition, lightZ });
+        return;
+      }
       if (control !== LightControl.ORBIT || handTrackingActive) {
         return;
       }
-      const phase = performance.now() * ORBIT_SPEED;
+      const phase = now * ORBIT_SPEED;
       placeLight(
         0.5 + Math.cos(phase) * ORBIT_RADIUS,
         0.44 + Math.sin(phase * 1.37) * ORBIT_RADIUS * 0.8,
@@ -218,9 +284,26 @@ export function setupLightInput(
     setTrackedLight(position, depth) {
       handTrackingActive = true;
       control = LightControl.PINNED;
-      placeLight(position[0], position[1]);
+      floating = false;
+      velocity = [0, 0];
+      depthVelocity = 0;
+      lastMotionTime = performance.now();
+      physicalPosition = [clamp(position[0], 0, 1), clamp(position[1], 0, 1)];
+      lightPosition = [...physicalPosition];
       lightZ = clamp(depth, LIGHT_Z_MIN, LIGHT_Z_MAX);
-      onChange({ lightZ });
+      onChange({ lightPosition, lightZ });
+    },
+    releaseTrackedLight(nextVelocity, nextDepthVelocity) {
+      control = LightControl.PINNED;
+      physicalPosition = [...lightPosition];
+      velocity = [
+        clamp(nextVelocity[0] * THROW_SCALE, -1.5, 1.5),
+        clamp(nextVelocity[1] * THROW_SCALE, -1.5, 1.5),
+      ];
+      depthVelocity = clamp(nextDepthVelocity * THROW_SCALE, -1.8, 1.8);
+      floating = true;
+      lastMotionTime = performance.now();
+      floatStartTime = lastMotionTime;
     },
     setHandTrackingActive(active) {
       handTrackingActive = active;

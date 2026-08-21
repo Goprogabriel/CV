@@ -46,3 +46,11 @@ Unless required by applicable law or agreed to in writing, software distributed
 under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
+
+## Interaction reference — Marc Rousavy
+
+The pinch-to-grab interaction in LetThereBeLight is inspired by
+[Marc Rousavy's depth-aware light injection demo](https://x.com/mrousavy/status/2090591615639269829),
+built with VisionCamera, Apple Vision hand detection and react-native-webgpu.
+This is an interaction and design reference; no source code from that demo is
+included in this repository.

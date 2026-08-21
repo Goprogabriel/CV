@@ -6,7 +6,7 @@ import '@/styles/let-there-be-light.css';
 <BaseLayout
   locale="en"
   title="LetThereBeLight — Live hand-controlled relighting by Gabriel Back"
-  description="Move a virtual light through a live camera scene with your hand using on-device MediaPipe tracking, monocular depth estimation and WebGPU."
+  description="Pinch, move and throw a floating virtual light between your hands in a live camera scene using on-device MediaPipe tracking, monocular depth and WebGPU."
   navigationMode="projects"
   ogImage="/media/projects/let-there-be-light.jpg"
 >
@@ -36,8 +36,8 @@ import '@/styles/let-there-be-light.css';
           <span class="light-hand-guide-icon" aria-hidden="true">
             <i></i><i></i><i></i><i></i><i></i>
           </span>
-          <p><strong>Raise one hand.</strong> Your index finger places the light.</p>
-          <div><span>← → · left / right</span><span>↑ ↓ · up / down</span><span>near / far · depth</span></div>
+          <p><strong>Pinch to catch the light.</strong> Flick and release to throw it from one hand to the other.</p>
+          <div><span>throw hand to hand</span><span>move closer / farther for depth</span></div>
         </div>
 
         <div class="light-depth-meter" data-depth-meter aria-hidden="true">
@@ -54,7 +54,7 @@ import '@/styles/let-there-be-light.css';
           <button class="light-retry" data-light-retry type="button" hidden>Try again</button>
         </div>
 
-        <p class="light-gesture-hint">Finger controls position · move your hand closer or farther for depth</p>
+        <p class="light-gesture-hint" data-gesture-hint>Show a hand · pinch thumb and index finger to catch the light</p>
         <button class="light-credits-trigger" data-credits-open type="button">Credits <span>↗</span></button>
       </div>
     </section>
@@ -85,7 +85,7 @@ import '@/styles/let-there-be-light.css';
         <div class="hand-control-setting">
           <div>
             <strong>Hand control</strong>
-            <small>Index finger moves the light. Hand distance controls depth.</small>
+            <small>Pinch to catch, move in 3D, then flick and release to throw the light.</small>
           </div>
           <label class="settings-toggle">
             <input data-hand-toggle type="checkbox" checked />
@@ -149,6 +149,11 @@ import '@/styles/let-there-be-light.css';
           <p>
             Browser-based hand landmarks are provided by
             <a href="https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker/web_js" target="_blank" rel="noreferrer">Google MediaPipe Hand Landmarker</a>.
+          </p>
+          <p>
+            The pinch-to-grab interaction is inspired by
+            <a href="https://x.com/mrousavy/status/2090591615639269829" target="_blank" rel="noreferrer">Marc Rousavy’s depth-aware light injection demo</a>
+            built with VisionCamera and react-native-webgpu.
           </p>
           <p class="light-credits-note">Interface adaptation and CV integration by Gabriel Back.</p>
         </aside>
