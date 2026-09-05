@@ -1,4 +1,4 @@
-name: Deploy portfolio to GitHub Pages
+name: Deploy desktop CV to GitHub Pages
 
 on:
   push:
@@ -29,26 +29,15 @@ jobs:
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Typecheck and lint
-        run: pnpm check && pnpm lint
+      - name: Typecheck, lint, and test
+        run: pnpm check && pnpm lint && pnpm test
+      - name: Configure Pages
+        id: pages
+        uses: actions/configure-pages@v5
       - name: Build static site
         env:
-          CUSTOM_SITE_URL: ${{ vars.SITE_URL }}
-          CUSTOM_BASE_PATH: ${{ vars.BASE_PATH }}
-          REPOSITORY_NAME: ${{ github.event.repository.name }}
-          REPOSITORY_OWNER: ${{ github.repository_owner }}
-        run: |
-          if [ -n "$CUSTOM_SITE_URL" ]; then
-            export SITE_URL="$CUSTOM_SITE_URL"
-            export BASE_PATH="$CUSTOM_BASE_PATH"
-          elif [[ "$REPOSITORY_NAME" == *.github.io ]]; then
-            export SITE_URL="https://${REPOSITORY_OWNER}.github.io"
-            export BASE_PATH=""
-          else
-            export SITE_URL="https://${REPOSITORY_OWNER}.github.io"
-            export BASE_PATH="$REPOSITORY_NAME"
-          fi
-          pnpm build
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+        run: pnpm build
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
