@@ -89,7 +89,7 @@ export const showcaseProjects: ShowcaseProject[] = [
   },
   {
     id: 'nomad-crm',
-    name: 'CRM — Nomad',
+    name: 'CRM - Nomad',
     category: 'Internal platform',
     status: 'In daily use',
     summary:

@@ -15,8 +15,8 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = language;
     document.title =
       language === 'da'
-        ? 'Gabriel Back — Mit digitale skrivebord'
-        : 'Gabriel Back — My digital desktop';
+        ? 'Gabriel Back - Mit digitale skrivebord'
+        : 'Gabriel Back - My digital desktop';
     try {
       localStorage.setItem('gb-language', language);
     } catch {

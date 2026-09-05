@@ -1,6 +1,6 @@
 # Third-party notices
 
-## TypeGPU — Monocular Light Injection example
+## TypeGPU - Monocular Light Injection example
 
 The implementation in `src/features/let-there-be-light/` is adapted from the
 [TypeGPU Monocular Light Injection example](https://github.com/software-mansion/TypeGPU/tree/main/apps/typegpu-docs/src/examples/image-processing/monocular-light-injection)
@@ -47,7 +47,7 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 
-## Interaction reference — Marc Rousavy
+## Interaction reference - Marc Rousavy
 
 The pinch-to-grab interaction in LetThereBeLight is inspired by
 [Marc Rousavy's depth-aware light injection demo](https://x.com/mrousavy/status/2090591615639269829),

@@ -33,7 +33,7 @@ export function BrowserApp() {
         <span>
           {page
             ? page.kind === 'search'
-              ? `${page.query} — Google`
+              ? `${page.query} - Google`
               : new URL(page.url).hostname
             : t('Ny fane', 'New tab')}
         </span>

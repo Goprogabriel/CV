@@ -343,7 +343,7 @@ export function SectionContent({
       {cv.contact.links.map((l) => (
         <p key={l.label}>
           <a href={l.url} target="_blank" rel="noreferrer">
-            {l.label} — {l.display}
+            {l.label} - {l.display}
           </a>
         </p>
       ))}

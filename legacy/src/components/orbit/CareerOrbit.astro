@@ -68,7 +68,7 @@ const orbitLabels: Record<string, { da: string; en: string }> = {
     </div>
     <div class="orbit-mobile" aria-label={locale === 'da' ? 'Karriereforløb i listeform' : 'Career path as a list'}>
       {entries.slice().reverse().map((entry) => (
-        <details><summary>{entry.startYear} — {entry.title[locale]}</summary><p><strong>{entry.organisation}</strong> · {entry.period[locale]}</p><p>{entry.overview[locale]}</p></details>
+        <details><summary>{entry.startYear} - {entry.title[locale]}</summary><p><strong>{entry.organisation}</strong> · {entry.period[locale]}</p><p>{entry.overview[locale]}</p></details>
       ))}
     </div>
   </div>

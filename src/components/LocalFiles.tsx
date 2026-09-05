@@ -147,7 +147,7 @@ export function LocalFiles({
         </span>
         <span>
           <HardDrive size={11} />
-          {t('Lokal lagring', 'Local storage')}
+          {t('Denne session', 'This session')}
         </span>
       </footer>
     </div>

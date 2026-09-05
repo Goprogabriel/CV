@@ -1,4 +1,4 @@
-# Gabriel Back — CV
+# Gabriel Back - CV
 
 Min personlige CV- og portfolio-side som et interaktivt Linux-inspireret skrivebord.
 

@@ -4,12 +4,12 @@ export const site = {
   name: 'Gabriel Back',
   monogram: 'GB',
   title: {
-    da: 'Gabriel Back — Full-stack, teknisk produkt & drift',
-    en: 'Gabriel Back — Full-stack, technical product & operations'
+    da: 'Gabriel Back - Full-stack, teknisk produkt & drift',
+    en: 'Gabriel Back - Full-stack, technical product & operations'
   } satisfies Localized,
   description: {
-    da: 'Interaktivt CV og portfolio for Gabriel Back — Head of IT, full-stack udvikler og teknisk produktprofil i København.',
-    en: 'Interactive CV and portfolio for Gabriel Back — Head of IT, full-stack developer and technical product professional in Copenhagen.'
+    da: 'Interaktivt CV og portfolio for Gabriel Back - Head of IT, full-stack udvikler og teknisk produktprofil i København.',
+    en: 'Interactive CV and portfolio for Gabriel Back - Head of IT, full-stack developer and technical product professional in Copenhagen.'
   } satisfies Localized,
   availability: {
     da: 'Åben for roller og samarbejder, hvor produkt, udvikling og drift skal hænge sammen.',

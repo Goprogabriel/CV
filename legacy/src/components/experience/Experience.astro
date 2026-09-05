@@ -15,7 +15,7 @@ const { locale } = Astro.props as { locale: Locale };
         <details class="experience-item reveal">
           <summary>
             <time>{entry.period[locale]}</time>
-            <span class="experience-summary-logo">{entry.logo ? <img src={withBase(entry.logo)} alt={`${entry.organisation} — logo`} loading="lazy" /> : entry.organisation.slice(0, 2)}</span>
+            <span class="experience-summary-logo">{entry.logo ? <img src={withBase(entry.logo)} alt={`${entry.organisation} - logo`} loading="lazy" /> : entry.organisation.slice(0, 2)}</span>
             <div><span class="company">{entry.organisation}</span><h3>{entry.title[locale]}</h3></div>
             <span class="experience-plus" aria-hidden="true">+</span>
           </summary>

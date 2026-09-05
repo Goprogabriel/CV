@@ -4,7 +4,7 @@ export const experience: TimelineEntry[] = [
   {
     id: 'nomad', kind: 'experience', organisation: 'Nomad Properties', startYear: 2026,
     title: { da: 'Head of IT', en: 'Head of IT' },
-    period: { da: '2026 — nu', en: '2026 — present' },
+    period: { da: '2026 - nu', en: '2026 - present' },
     overview: { da: 'Ejer det tekniske produktlandskab og udvikler virksomhedens CRM- og driftssystem.', en: 'Own the technical product landscape and build the company’s CRM and operations system.' },
     details: {
       da: ['Byggede platformen fra datamodel og API’er til dashboards og brugerflows.', 'Forbinder forretningsbehov med sikker arkitektur, integrationer og stabil drift.'],
@@ -16,7 +16,7 @@ export const experience: TimelineEntry[] = [
   {
     id: 'estatetool', kind: 'experience', organisation: 'Estatetool A/S', startYear: 2025,
     title: { da: 'Supporter & QA Specialist', en: 'Support & QA Specialist' },
-    period: { da: '2025 — 2026', en: '2025 — 2026' },
+    period: { da: '2025 - 2026', en: '2025 - 2026' },
     overview: { da: 'Gjorde brugerfeedback og fejl til konkrete produktforbedringer.', en: 'Turned user feedback and issues into concrete product improvements.' },
     details: {
       da: ['Fejlsøgte, kvalitetssikrede releases og dokumenterede reproducerbare fejl.', 'Skabte en kortere vej fra kundeproblem til produktbeslutning.'],
@@ -28,7 +28,7 @@ export const experience: TimelineEntry[] = [
   {
     id: 'we-are-safe', kind: 'experience', organisation: 'We are Safe', startYear: 2022,
     title: { da: 'Support, Customer Success & Key Accounts', en: 'Support, Customer Success & Key Accounts' },
-    period: { da: '2022 — 2025', en: '2022 — 2025' },
+    period: { da: '2022 - 2025', en: '2022 - 2025' },
     overview: { da: 'Voksede fra teknisk support til ledelse, customer success og key accounts.', en: 'Progressed from technical support into leadership, customer success and key accounts.' },
     details: {
       da: ['Tog ansvar for supportkvalitet, kunderelationer og interne arbejdsgange.', 'Brugte CRM, SQL og Firebase til at skabe overblik og forbedringer.'],
@@ -39,8 +39,8 @@ export const experience: TimelineEntry[] = [
   },
   {
     id: 'roskilde', kind: 'volunteer', organisation: 'Roskilde Festival', startYear: 2024,
-    title: { da: 'Frivillig — bl.a. driftsansvarlig for beredskabet', en: 'Volunteer — including Operations Lead for Emergency Response' },
-    period: { da: '2024 — nu', en: '2024 — present' },
+    title: { da: 'Frivillig - bl.a. driftsansvarlig for beredskabet', en: 'Volunteer - including Operations Lead for Emergency Response' },
+    period: { da: '2024 - nu', en: '2024 - present' },
     overview: { da: 'Driftsansvar og koordinering i et miljø, hvor beslutninger skal fungere med det samme.', en: 'Operational ownership and coordination where decisions must work immediately.' },
     details: {
       da: ['Koordinerer kritisk information mellem frivillige, politi og brandvæsen.', 'Byggede BUSBUS til planlægning og koordinering af frivillige.'],

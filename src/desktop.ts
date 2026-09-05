@@ -20,6 +20,7 @@ export const emptyDesktop: DesktopData = {
   wallpaper: 'blue',
 };
 export const storageKey = 'gabriel-desktop-v1';
+export const sessionStorageKey = `${storageKey}-session`;
 export function parseDesktop(raw: string | null): DesktopData {
   if (!raw) return { ...emptyDesktop, files: [], positions: {} };
   try {

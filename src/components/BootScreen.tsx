@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { ArrowRight, Power } from 'lucide-react';
-import { DesktopMark } from './Icons';
 import { useLocale } from '../Locale';
 export type PowerState = 'booting' | 'ready' | 'shutdown' | 'off';
 export function BootScreen({
@@ -73,7 +72,13 @@ export function BootScreen({
         </div>
       ) : (
         <div className="boot-center">
-          <DesktopMark className="boot-mark" />
+          <div className="boot-profile-photo">
+            <img
+              src={`${import.meta.env.BASE_URL}images/profile.jpg`}
+              alt={t('Gabriel Back ved sin computer', 'Gabriel Back at his computer')}
+            />
+            <span>GB</span>
+          </div>
           <h1>
             gabriel<span>os</span>
             <sup>3.0</sup>

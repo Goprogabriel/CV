@@ -42,6 +42,7 @@ import {
   descendants,
   parseDesktop,
   storageKey,
+  sessionStorageKey,
   type DesktopData,
   type DesktopFile,
   type Point,
@@ -74,7 +75,9 @@ export default function App() {
   const nextZ = useRef(1);
   const [desktop, setDesktop] = useState<DesktopData>(() => {
     try {
-      return parseDesktop(localStorage.getItem(storageKey));
+      const preferences = parseDesktop(localStorage.getItem(storageKey));
+      const session = parseDesktop(sessionStorage.getItem(sessionStorageKey));
+      return { ...preferences, files: session.files };
     } catch {
       return parseDesktop(null);
     }
@@ -100,7 +103,8 @@ export default function App() {
     .reduce<WindowState | undefined>((a, b) => (!a || b.z > a.z ? b : a), undefined)?.id;
   useEffect(() => {
     try {
-      localStorage.setItem(storageKey, JSON.stringify(desktop));
+      localStorage.setItem(storageKey, JSON.stringify({ ...desktop, files: [] }));
+      sessionStorage.setItem(sessionStorageKey, JSON.stringify(desktop));
       setStorageOk(true);
     } catch {
       setStorageOk(false);
@@ -189,9 +193,9 @@ export default function App() {
     if (w.app === 'terminal') return 'gabriel@portfolio: ~';
     if (w.app === 'editor') return file?.name ?? label('editor');
     if (w.app === 'files')
-      return `${file?.name ?? label('files')} — ${t('Filhåndtering', 'File Manager')}`;
+      return `${file?.name ?? label('files')} - ${t('Filhåndtering', 'File Manager')}`;
     if (sections.some((s) => s.id === w.app))
-      return `${label(w.section ?? w.app)} — ${t('Filhåndtering', 'File Manager')}`;
+      return `${label(w.section ?? w.app)} - ${t('Filhåndtering', 'File Manager')}`;
     return label(w.app);
   }
   function patch(id: string, change: Partial<WindowState>) {
@@ -430,7 +434,19 @@ export default function App() {
         fileMenu(e.clientX, e.clientY);
       }}
     >
-      <div className="wallpaper" aria-hidden="true">
+      <div
+        className="wallpaper"
+        aria-hidden="true"
+        style={
+          desktop.wallpaper === 'blue'
+            ? {
+                backgroundImage: `linear-gradient(180deg, #06111a66 0%, #06111a99 100%), url("${import.meta.env.BASE_URL}images/wallpaper.jpg")`,
+                backgroundPosition: 'center 48%',
+                backgroundSize: 'cover',
+              }
+            : undefined
+        }
+      >
         <div className="wallpaper-orbit orbit-one" />
         <div className="wallpaper-orbit orbit-two" />
         <div className="wallpaper-orbit orbit-three" />
@@ -642,9 +658,9 @@ export default function App() {
       <div className="desktop-signature" aria-hidden="true">
         <div>GABRIEL BACK / PERSONAL WORKSPACE</div>
         <p>
-          {t('Nysgerrighed i koden.', 'Curiosity in the code.')}
+          {t('Fra idé til færdigt produkt.', 'From idea to finished product.')}
           <br />
-          {t('Ansvar i virkeligheden.', 'Ownership in the real world.')}
+          {t('Bygget til virkeligheden.', 'Built for the real world.')}
         </p>
         <span>
           gabriel@portfolio <span className="blue-text">~</span>
@@ -694,10 +710,10 @@ export default function App() {
                 onSaved={() =>
                   setToast(
                     storageOk
-                      ? t('Noten er gemt i denne browser.', 'Your note is saved in this browser.')
+                      ? t('Noten er gemt i denne session.', 'Your note is saved for this session.')
                       : t(
-                          'Lokal lagring er fuld eller blokeret. Download noten for at beholde den.',
-                          'Local storage is full or blocked. Download your note to keep it.',
+                          'Midlertidig lagring er blokeret. Download noten, hvis du vil beholde den.',
+                          'Session storage is blocked. Download your note if you want to keep it.',
                         ),
                   )
                 }
@@ -751,7 +767,7 @@ export default function App() {
                           <DesktopMark />
                           <span>
                             {color === 'blue'
-                              ? t('Midnatsblå', 'Midnight blue')
+                              ? t('Mit billede', 'My photo')
                               : color === 'graphite'
                                 ? t('Grafit', 'Graphite')
                                 : t('Violet', 'Violet')}
@@ -775,10 +791,13 @@ export default function App() {
                     </button>
                     <p className={storageOk ? 'green-text' : 'editor-warning'}>
                       {storageOk
-                        ? t('Lokal lagring er tilgængelig.', 'Local storage is available.')
+                        ? t(
+                            'Filer gemmes kun i denne session.',
+                            'Files are kept for this session only.',
+                          )
                         : t(
-                            'Lokal lagring er blokeret eller fuld. Download dine noter inden du forlader siden.',
-                            'Local storage is blocked or full. Download your notes before leaving.',
+                            'Midlertidig lagring er blokeret. Download dine noter, inden du forlader siden.',
+                            'Session storage is blocked. Download your notes before leaving.',
                           )}
                     </p>
                   </section>
@@ -1168,8 +1187,8 @@ export default function App() {
           <span>
             {toast ||
               t(
-                'Lokal lagring er utilgængelig. Download noter for at beholde dem.',
-                'Local storage is unavailable. Download notes to keep them.',
+                'Midlertidig lagring er utilgængelig. Download noter for at beholde dem.',
+                'Session storage is unavailable. Download notes to keep them.',
               )}
           </span>
           <button aria-label={t('Luk besked', 'Dismiss notification')} onClick={() => setToast('')}>

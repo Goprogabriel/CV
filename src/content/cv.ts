@@ -78,7 +78,7 @@ function makeCV(language: Language): CVContent {
           'My background is close to the user: technical support, customer success, and quality assurance. That experience shapes how I build. I understand the problem before choosing the technology, and create software that is clear to use and practical to maintain.',
         ),
         t(
-          'Ved siden af arbejdet udvikler og udgiver jeg egne produkter. PartyPal fik over 600 brugere i sin første uge og nåede en ottendeplads i den danske App Store. På Roskilde Festival bidrager jeg frivilligt med driftsansvar og koordinering — og har bygget BUSBUS til arbejdet med frivillige.',
+          'Ved siden af arbejdet udvikler og udgiver jeg egne produkter. PartyPal fik over 600 brugere i sin første uge og nåede en ottendeplads i den danske App Store. På Roskilde Festival bidrager jeg frivilligt med driftsansvar og koordinering - og har bygget BUSBUS til arbejdet med frivillige.',
           'Alongside my work, I develop and ship my own products. PartyPal gained more than 600 users in its first week and reached No. 8 in the Danish App Store. At Roskilde Festival, I volunteer in operations and coordination, and built BUSBUS to support the volunteer team.',
         ),
       ],
@@ -421,12 +421,12 @@ function makeCV(language: Language): CVContent {
         id: 'nomad',
         company: 'Nomad Properties',
         role: 'Head of IT',
-        period: t('2026 — nu', '2026 — present'),
+        period: t('2026 - nu', '2026 - present'),
         current: true,
         location: t('Teknologi, produkt & drift', 'Technology, product & operations'),
         summary: t(
-          'Teknisk ejerskab — fra virksomhedens behov til systemerne i daglig drift.',
-          'Technical ownership — from business needs to the systems used every day.',
+          'Teknisk ejerskab - fra virksomhedens behov til systemerne i daglig drift.',
+          'Technical ownership - from business needs to the systems used every day.',
         ),
         highlights: [
           t(
@@ -448,7 +448,7 @@ function makeCV(language: Language): CVContent {
         id: 'estatetool',
         company: 'Estatetool A/S',
         role: 'Support & QA Specialist',
-        period: '2025 — 2026',
+        period: '2025 - 2026',
         location: t('Support & kvalitetssikring', 'Support & quality assurance'),
         summary: t(
           'Gjorde brugerproblemer til viden, udviklingsteamet kunne handle på.',
@@ -470,7 +470,7 @@ function makeCV(language: Language): CVContent {
         id: 'we-are-safe',
         company: 'We are Safe',
         role: 'Support, Customer Success & Key Accounts',
-        period: '2022 — 2025',
+        period: '2022 - 2025',
         location: t('Kunder, ledelse & drift', 'Customers, leadership & operations'),
         summary: t(
           'Fra teknisk support til et bredere ansvar for kunder, team og arbejdsgange.',
@@ -499,7 +499,7 @@ function makeCV(language: Language): CVContent {
           'Frivillig · driftsansvar & beredskab',
           'Volunteer · operations & emergency response',
         ),
-        period: t('2024 — nu', '2024 — present'),
+        period: t('2024 - nu', '2024 - present'),
         current: true,
         location: t('Frivilligt arbejde', 'Volunteering'),
         summary: t(
@@ -670,7 +670,7 @@ function makeCV(language: Language): CVContent {
       email: 'gaphbahe@gmail.com',
       phone: '+45 21 95 62 25',
       note: t(
-        'Har I et produkt, der skal fra idé til virkelighed — eller systemer, der skal hænge bedre sammen? Jeg er åben for roller og samarbejder, hvor produkt, udvikling og drift mødes.',
+        'Har I et produkt, der skal fra idé til virkelighed - eller systemer, der skal hænge bedre sammen? Jeg er åben for roller og samarbejder, hvor produkt, udvikling og drift mødes.',
         'Have a product to take from idea to reality, or systems that need to work better together? I’m open to roles and collaborations that connect product, engineering, and operations.',
       ),
       links: [
@@ -741,7 +741,7 @@ const compactCV: Record<Language, CompactCV> = {
       {
         id: 'nomad',
         summary:
-          'Ansvar for CRM, API’er, integrationer og automatisering — fra arkitektur til daglig drift.',
+          'Ansvar for CRM, API’er, integrationer og automatisering - fra arkitektur til daglig drift.',
       },
       {
         id: 'estatetool',
@@ -773,7 +773,7 @@ const compactCV: Record<Language, CompactCV> = {
       {
         id: 'nomad',
         summary:
-          'Own CRM, APIs, integrations and automation — from architecture to daily operation.',
+          'Own CRM, APIs, integrations and automation - from architecture to daily operation.',
       },
       {
         id: 'estatetool',
@@ -818,7 +818,7 @@ export function cvText(language: Language = 'en'): string {
     t('UDVALGTE PROJEKTER', 'SELECTED PROJECTS'),
     ...short.projects.map(({ id, result }) => {
       const project = cv.projects.find((item) => item.id === id)!;
-      return `${project.name} — ${result}`;
+      return `${project.name} - ${result}`;
     }),
     '',
     t('KOMPETENCER', 'SKILLS'),
