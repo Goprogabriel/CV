@@ -69,8 +69,16 @@ export function SectionContent({
             </>
           )}
           {project.url && (
-            <a className="primary-button" href={project.url} target="_blank" rel="noreferrer">
-              {t('Besøg hjemmesiden', 'Visit website')} <ArrowUpRight size={16} />
+            <a
+              className="primary-button"
+              href={project.url}
+              target={project.url.startsWith('/') ? '_self' : '_blank'}
+              rel="noreferrer"
+            >
+              {project.url.startsWith('/')
+                ? t('Åbn projekt', 'Open project')
+                : t('Besøg hjemmesiden', 'Visit website')}{' '}
+              <ArrowUpRight size={16} />
             </a>
           )}
           <p className="demo-note">{project.year} · Gabriel Back</p>

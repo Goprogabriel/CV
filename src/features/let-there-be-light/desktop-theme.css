@@ -1,0 +1,232 @@
+:root {
+  color-scheme: dark;
+  font-family: Inter, sans-serif;
+  --forest-deep: #101926;
+  --forest: #345b83;
+  --paper: #dceafb;
+  --paper-strong: #192638;
+  --ink: #dceafb;
+  --accent: #8abcf0;
+  --line: #839cbb30;
+  --serif: Inter, sans-serif;
+  --nav-h: 0px;
+  --ease-editorial: ease;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: #0c1726;
+}
+button,
+input {
+  font: inherit;
+}
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+button {
+  cursor: pointer;
+}
+a {
+  color: #a7d0fb;
+}
+[hidden] {
+  display: none !important;
+}
+:focus-visible {
+  outline: 2px solid #9acbff;
+  outline-offset: 4px;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.eyebrow {
+  color: #8ba4c1;
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.1em;
+}
+.light-desktop-panel {
+  height: 36px;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #0e1723;
+  border-bottom: 1px solid #8eadd324;
+  font:
+    11px 'JetBrains Mono',
+    monospace;
+  color: #8198b2;
+}
+.light-desktop-panel a {
+  text-decoration: none;
+  color: #dceafb;
+  padding: 8px 0;
+}
+.light-panel-status {
+  color: #8bcca8;
+}
+.light-window-title {
+  height: 38px;
+  margin: 12px 12px 0;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(#344252, #263342);
+  color: #d4e0ee;
+  border: 1px solid #7b91aa4d;
+  border-radius: 8px 8px 0 0;
+  font-size: 12px;
+}
+.light-window-title a {
+  font-size: 23px;
+  text-decoration: none;
+  padding: 0 8px;
+}
+.light-experience {
+  margin: 0 12px 12px;
+  width: calc(100% - 24px);
+  border: 1px solid #7b91aa4d;
+  border-top: 0;
+  border-radius: 0 0 8px 8px;
+}
+.light-experience,
+.light-workspace,
+.light-stage {
+  height: calc(100dvh - 98px);
+  min-height: 0;
+}
+.light-stage,
+.light-workspace {
+  background: #101926;
+}
+.light-status {
+  background: #0e1829ed;
+}
+.light-hud,
+.light-log,
+.light-status-kicker {
+  font-family: 'JetBrains Mono', monospace;
+}
+.light-settings {
+  background: #111d2d;
+  border-radius: 8px;
+}
+.settings-header h2 {
+  font-size: 28px;
+  font-weight: 600;
+}
+.settings-header .eyebrow,
+.light-status-note {
+  color: #9bb0c8;
+}
+.light-settings small,
+.light-credits p {
+  color: #a8bad0;
+}
+.settings-fab {
+  width: 48px;
+  height: 48px;
+}
+.light-project-intro {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 42px;
+  padding: clamp(24px, 5vw, 80px);
+  overflow-y: auto;
+  background: radial-gradient(ellipse at 5% 10%, #23456788, transparent 65%), #101926;
+}
+.light-project-intro > img {
+  width: 100%;
+  max-height: 55vh;
+  object-fit: cover;
+  border-radius: 9px;
+  border: 1px solid #a2bee533;
+  box-shadow: 0 20px 60px #0005;
+}
+.light-intro-copy h1 {
+  font-size: clamp(26px, 4vw, 48px);
+  letter-spacing: -0.05em;
+  margin: 16px 0;
+  overflow-wrap: anywhere;
+}
+.light-intro-copy > p {
+  line-height: 1.7;
+}
+.light-intro-note {
+  font-size: 12px;
+  color: #99afc8;
+  max-width: 440px;
+}
+.light-start-button {
+  border: 1px solid #aad3fc80;
+  background: #2c659e;
+  color: #fff;
+  padding: 13px 22px;
+  border-radius: 5px;
+  font-weight: 500;
+  margin: 12px 0;
+}
+.light-start-button:hover {
+  background: #3578b7;
+}
+.light-start-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.light-intro-copy a {
+  font-size: 12px;
+}
+@media (max-width: 700px) {
+  .light-desktop-panel > span {
+    display: none;
+  }
+  .light-project-intro {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    align-content: start;
+    padding: 22px;
+  }
+  .light-project-intro > img {
+    max-height: 180px;
+  }
+  .light-window-title {
+    margin: 6px 6px 0;
+  }
+  .light-experience {
+    margin: 0 6px 6px;
+    width: calc(100% - 12px);
+  }
+  .light-experience,
+  .light-workspace,
+  .light-stage {
+    height: calc(100dvh - 86px);
+  }
+  .light-hud {
+    left: 14px;
+    right: 14px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

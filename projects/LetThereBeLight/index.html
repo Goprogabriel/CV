@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#101926" />
+    <title>LetThereBeLight - Gabriel Back</title>
+    <meta
+      name="description"
+      content="Catch, move and throw virtual light in a live camera scene. An interactive WebGPU project by Gabriel Back."
+    />
+    <link rel="icon" href="%BASE_URL%favicon.svg" />
+  </head>
+  <body class="light-project">
+    <header class="light-desktop-panel">
+      <a href="%BASE_URL%">← Gabriel OS</a>
+      <span>gabriel / projects / LetThereBeLight</span>
+      <span class="light-panel-status">● WebGPU experiment</span>
+    </header>
+    <div class="light-window-title">
+      <span>☼ LetThereBeLight</span>
+      <a href="%BASE_URL%" aria-label="Close project and return to desktop">×</a>
+    </div>
+    <main id="main" class="light-experience" data-light-app>
+      <section class="light-workspace" data-nav-theme="dark">
+        <div class="light-stage" data-light-stage data-state="busy">
+          <section class="light-project-intro" data-project-intro aria-labelledby="project-title">
+            <img
+              src="%BASE_URL%images/let-there-be-light.jpg"
+              alt="Preview of the virtual light experiment"
+            />
+            <div class="light-intro-copy">
+              <p class="eyebrow">GABRIEL OS / INTERACTIVE PROJECT</p>
+              <h1 id="project-title">LetThereBeLight</h1>
+              <p>Catch the light. Move it with your hands.</p>
+              <p class="light-intro-note">
+                Pinch near the light to catch it, then move, flick and release. You can also use
+                your mouse or touch.
+              </p>
+              <button class="light-start-button" data-start-camera type="button">
+                Start camera
+              </button>
+              <p class="light-intro-note">
+                Requires a WebGPU-capable browser and camera access. The depth model downloads on
+                first use (about 68 MB). Camera images are processed on your device.
+              </p>
+              <p data-start-error role="status"></p>
+              <a href="%BASE_URL%">← Back to the CV desktop</a>
+            </div>
+          </section>
+          <div data-live-content inert>
+            <canvas
+              class="light-canvas"
+              data-light-canvas
+              width="1"
+              height="1"
+              aria-label="Live camera with hand-controlled virtual lighting"
+            ></canvas>
+            <canvas
+              class="light-hand-overlay"
+              data-hand-overlay
+              width="1"
+              height="1"
+              aria-hidden="true"
+            ></canvas>
+            <video data-light-video autoplay muted playsinline hidden></video>
+
+            <div class="light-vignette" aria-hidden="true"></div>
+            <h1 class="sr-only">LetThereBeLight</h1>
+
+            <div class="light-hud" aria-label="Live project status">
+              <span class="light-live"><i></i> Live camera</span>
+              <span data-hand-status data-state="loading"><i></i><b>Loading hand control</b></span>
+              <span class="light-device">Large depth model · on device</span>
+            </div>
+
+            <div class="light-hand-guide" data-hand-guide>
+              <span class="light-hand-guide-icon" aria-hidden="true">
+                <i></i><i></i><i></i><i></i><i></i>
+              </span>
+              <p>
+                <strong>Pinch near the light.</strong> Hold briefly to catch, then flick and release
+                to throw.
+              </p>
+              <div><span>stable pinch confirms catch</span><span>throw hand to hand</span></div>
+            </div>
+
+            <div class="light-depth-meter" data-depth-meter aria-hidden="true">
+              <span>Near</span>
+              <div><i></i></div>
+              <span>Far</span>
+            </div>
+
+            <div class="light-status" data-light-status role="status" aria-live="polite">
+              <span class="light-spinner" aria-hidden="true"></span>
+              <p class="light-status-kicker" data-status-kicker>Preparing WebGPU</p>
+              <p class="light-status-message" data-status-message>
+                Connecting to your graphics processor…
+              </p>
+              <p class="light-status-note">Camera and hand processing stay on this device.</p>
+              <button class="light-retry" data-light-retry type="button" hidden>Try again</button>
+            </div>
+
+            <p class="light-gesture-hint" data-gesture-hint>
+              Pinch near the light and hold briefly to catch
+            </p>
+            <button class="light-credits-trigger" data-credits-open type="button">
+              Credits <span>↗</span>
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <button
+      class="settings-fab"
+      data-settings-open
+      hidden
+      type="button"
+      aria-label="Open light settings"
+      aria-controls="light-settings"
+      aria-expanded="false"
+    >
+      <span class="settings-icon" aria-hidden="true"><i></i><i></i><i></i></span>
+    </button>
+
+    <dialog
+      id="light-settings"
+      class="light-settings"
+      data-settings-dialog
+      aria-labelledby="settings-title"
+    >
+      <div class="settings-panel">
+        <header class="settings-header">
+          <div>
+            <p class="eyebrow">Live controls</p>
+            <h2 id="settings-title">Shape the light.</h2>
+          </div>
+          <button
+            class="settings-close"
+            data-settings-close
+            type="button"
+            aria-label="Close settings"
+          >
+            ×
+          </button>
+        </header>
+
+        <div class="settings-scroll">
+          <div class="hand-control-setting">
+            <div>
+              <strong>Hand control</strong>
+              <small
+                >Pinch near the light and hold briefly. Move in 3D, then flick and release to
+                throw.</small
+              >
+            </div>
+            <label class="settings-toggle">
+              <input data-hand-toggle type="checkbox" checked />
+              <span aria-hidden="true"></span>
+              <span class="sr-only">Enable hand control</span>
+            </label>
+          </div>
+
+          <fieldset class="camera-switch">
+            <legend>Camera</legend>
+            <label
+              ><input type="radio" name="camera-facing" value="front" checked /><span
+                >Front</span
+              ></label
+            >
+            <label><input type="radio" name="camera-facing" value="back" /><span>Back</span></label>
+          </fieldset>
+
+          <div class="setting-list">
+            <label class="setting-row" for="light-intensity">
+              <span
+                >Intensity <output data-output="intensity" for="light-intensity">3</output></span
+              >
+              <input
+                id="light-intensity"
+                data-setting="intensity"
+                type="range"
+                min="0"
+                max="3.5"
+                step="0.05"
+                value="3"
+              />
+            </label>
+            <label class="setting-row" for="light-bulb-size">
+              <span
+                >Bulb size <output data-output="bulbSize" for="light-bulb-size">0.55</output></span
+              >
+              <input
+                id="light-bulb-size"
+                data-setting="bulbSize"
+                type="range"
+                min="0.2"
+                max="1.5"
+                step="0.05"
+                value="0.55"
+              />
+            </label>
+            <label class="setting-row" for="light-ambient">
+              <span>Ambient <output data-output="ambient" for="light-ambient">0.5</output></span>
+              <input
+                id="light-ambient"
+                data-setting="ambient"
+                type="range"
+                min="0"
+                max="1.2"
+                step="0.05"
+                value="0.5"
+              />
+            </label>
+            <label class="setting-row" for="light-relief">
+              <span>Relief <output data-output="relief" for="light-relief">0.85</output></span>
+              <input
+                id="light-relief"
+                data-setting="relief"
+                type="range"
+                min="0"
+                max="2.5"
+                step="0.05"
+                value="0.85"
+              />
+            </label>
+            <label class="setting-row" for="light-shadow">
+              <span>Shadow <output data-output="shadow" for="light-shadow">0.7</output></span>
+              <input
+                id="light-shadow"
+                data-setting="shadow"
+                type="range"
+                min="0"
+                max="1"
+                step="0.05"
+                value="0.7"
+              />
+            </label>
+            <label class="setting-row" for="light-occlusion">
+              <span
+                >Occlusion <output data-output="occlusion" for="light-occlusion">0.55</output></span
+              >
+              <input
+                id="light-occlusion"
+                data-setting="occlusion"
+                type="range"
+                min="0"
+                max="1"
+                step="0.05"
+                value="0.55"
+              />
+            </label>
+            <label class="setting-color" for="light-color">
+              <span><strong>Light color</strong><small>Choose a warm or cool source.</small></span>
+              <input id="light-color" data-setting="color" type="color" value="#ffb875" />
+            </label>
+          </div>
+
+          <button class="settings-reset" data-settings-reset type="button">
+            Reset light settings
+          </button>
+
+          <div class="settings-storage">
+            <label
+              ><input data-cache-toggle type="checkbox" checked /> Keep the depth model on this
+              device</label
+            >
+            <button data-clear-cache type="button">Clear downloaded model</button>
+          </div>
+
+          <aside class="light-credits" data-credits tabindex="-1">
+            <p class="eyebrow">Credits</p>
+            <p>
+              Adapted from the
+              <a
+                href="https://github.com/software-mansion/TypeGPU/tree/main/apps/typegpu-docs/src/examples/image-processing/monocular-light-injection"
+                target="_blank"
+                rel="noreferrer"
+                >Monocular Light Injection experiment</a
+              >
+              in TypeGPU by Software Mansion, created by
+              <a href="https://x.com/reczko_konrad" target="_blank" rel="noreferrer"
+                >Konrad Reczko</a
+              >.
+            </p>
+            <p>
+              Browser-based hand landmarks are provided by
+              <a
+                href="https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker/web_js"
+                target="_blank"
+                rel="noreferrer"
+                >Google MediaPipe Hand Landmarker</a
+              >.
+            </p>
+            <p>
+              The pinch-to-grab interaction is inspired by
+              <a
+                href="https://x.com/mrousavy/status/2090591615639269829"
+                target="_blank"
+                rel="noreferrer"
+                >Marc Rousavy’s depth-aware light injection demo</a
+              >
+              built with VisionCamera and react-native-webgpu.
+            </p>
+            <p class="light-credits-note">
+              Interface adaptation and CV integration by Gabriel Back.
+            </p>
+          </aside>
+        </div>
+      </div>
+    </dialog>
+
+    <script type="module" src="/src/features/let-there-be-light/entry.ts"></script>
+  </body>
+</html>

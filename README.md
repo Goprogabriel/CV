@@ -25,3 +25,5 @@ pnpm dev
 Kør `pnpm verify` for typecheck, lint, tests og production build.
 
 CV-indholdet ligger samlet i [`src/content/cv.ts`](src/content/cv.ts), så profil, erfaring og projekter nemt kan opdateres ét sted.
+
+[LetThereBeLight](https://goprogabriel.github.io/cv/projects/LetThereBeLight/) er gendannet som en selvstændig projektside i samme skrivebordsdesign. Kameraoplevelsen kræver WebGPU og starter først ved klik. Kameraet behandles på enheden; dybdemodellen hentes ved første brug. GPU-koden bruger TypeGPU og den tilhørende TypeScript-variant `tsover`.

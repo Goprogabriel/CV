@@ -389,6 +389,7 @@ function makeCV(language: Language): CVContent {
       },
       {
         id: 'let-there-be-light',
+        url: `${import.meta.env.BASE_URL}projects/LetThereBeLight/`,
         name: 'LetThereBeLight',
         category: t('Interaktivt WebGPU-eksperiment', 'Interactive WebGPU experiment'),
         year: t('Eksperiment', 'Experiment'),
